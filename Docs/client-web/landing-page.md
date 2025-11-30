@@ -8,6 +8,7 @@
 
 ## Files Created
 
+```
 apps/client-web/components/landing-page
 │
 ├── LandingPage.tsx          # Main landing page component
@@ -18,7 +19,7 @@ apps/client-web/components/landing-page
 ├── Footer.tsx               # Footer component
 ├── LandingPage.test.tsx     # Unit / integration tests
 └── index.ts                 # Barrel export
-
+```
 ---
 
 ## Description
