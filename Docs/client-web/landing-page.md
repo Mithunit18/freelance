@@ -1,7 +1,9 @@
 # Documentation: Landing Page Feature
 
 **Feature:** Landing Page
+
 **Created by:** John Doe
+
 **Date:** 2025-11-30
 
 ---
