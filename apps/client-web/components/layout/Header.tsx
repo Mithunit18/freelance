@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from "@vision-match/ui-web"; 
 import { cn } from "@vision-match/utils-js"; 
-import { verifySession, logout } from '@/services/clientAuth'; // Import our auth services
+import { Auth} from '@/services/Auth'; // Import our auth services
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -28,7 +28,7 @@ export function Header() {
   // 1. Check Login Status on Mount
   useEffect(() => {
     const checkAuth = async () => {
-      const userData = await verifySession();
+      const userData = await Auth.me();
       setUser(userData);
       setLoading(false);
     };
@@ -37,7 +37,7 @@ export function Header() {
 
   // 2. Handle Logout
   const handleLogout = async () => {
-    await logout();
+    await Auth.logout();
     setUser(null);
     setIsProfileOpen(false);
     router.refresh();
@@ -102,7 +102,7 @@ export function Header() {
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/50 border border-white/10 hover:border-cyan-500/50 transition-colors"
                   >
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                    <div className="h-8 w-8 rounded-full bg-linear-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
                       {user.email?.[0].toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-slate-200 max-w-[100px] truncate">
@@ -154,10 +154,10 @@ export function Header() {
               ) : (
                 // LOGGED OUT STATE
                 <>
-                  <Button variant="ghost" className="text-slate-300 hover:text-white hover:bg-white/5" asChild>
+                  <Button className="text-slate-300 hover:text-white hover:bg-white/5" variant="ghost">
                     <Link href="/login">Sign In</Link>
                   </Button>
-                  <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/20 border-0" asChild>
+                  <Button className="bg-linear-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/20 border-0" >
                     <Link href="/signup">Get Started</Link>
                   </Button>
                 </>
@@ -219,10 +219,10 @@ export function Header() {
                     </>
                   ) : (
                     <div className="flex flex-col gap-2 mt-2">
-                      <Button variant="ghost" className="w-full justify-start text-slate-300" asChild>
+                      <Button variant="ghost" className="w-full justify-start text-slate-300">
                          <Link href="/login">Sign In</Link>
                       </Button>
-                      <Button className="w-full bg-cyan-600 hover:bg-cyan-500" asChild>
+                      <Button className="w-full bg-cyan-600 hover:bg-cyan-500">
                          <Link href="/signup">Get Started</Link>
                       </Button>
                     </div>

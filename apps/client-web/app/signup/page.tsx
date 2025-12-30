@@ -84,7 +84,7 @@ export default function SignupPage() {
         role: formData.role, 
       });
       toast.success("Account created successfully!");
-      router.push(data.role === 'client' ? '/client/onboarding' : '/creator/onboarding');
+      router.push(data.role === 'client' ? '/client/wizard' : '/creator/onboarding');
     } catch (err: any) {
       toast.error(err?.response?.data?.detail || "Registration failed.");
     } finally {

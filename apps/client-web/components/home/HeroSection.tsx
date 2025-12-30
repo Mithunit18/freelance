@@ -87,7 +87,7 @@ export function HeroSection() {
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 border-2 border-slate-950 flex items-center justify-center"
+                    className="w-9 h-9 rounded-full bg-linear-to-br from-cyan-500 to-cyan-600 border-2 border-slate-950 flex items-center justify-center"
                   />
                 ))}
               </div>

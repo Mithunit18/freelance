@@ -32,7 +32,7 @@ const Button = ({ children, className = '', disabled, loading, ...props }: any) 
       <span className="relative z-10 flex items-center gap-2">
         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : children}
       </span>
-      <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
+      <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
     </button>
   );
 };
@@ -58,7 +58,9 @@ export default function LoginPage() {
         const data = await Auth.me();
         if (data && data.user) {
           const { role } = data.user;
-          const targetPath = role === "client" ? "/client/onboarding" : "/creator/onboarding";
+          console.log(role);
+
+          const targetPath = role == "client" ? "/client/wizard" : "/creator/onboarding";
           router.replace(targetPath);
         } else {
           setIsCheckingAuth(false);
@@ -80,7 +82,7 @@ export default function LoginPage() {
       });
       if (data && data.user) {
         toast.success("Welcome back!");
-        const target = data.user.role === "client" ? "/client/onboarding" : "/creator/onboarding";
+        const target = data.user.role === "client" ? "/client/wizard" : "/creator/onboarding";
         router.push(target);
       }
     } catch (err: any) {
