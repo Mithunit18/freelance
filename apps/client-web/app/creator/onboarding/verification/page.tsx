@@ -109,7 +109,7 @@ const VerificationOnboarding = () => {
           <motion.div 
             initial={{ y: -10 }}
             animate={{ y: 0 }}
-            className="w-20 h-20 rounded-[2rem] bg-white shadow-xl flex items-center justify-center mx-auto mb-8 border border-white"
+            className="w-20 h-20 rounded-4xl bg-white shadow-xl flex items-center justify-center mx-auto mb-8 border border-white"
           >
             <ShieldCheck className="w-10 h-10" style={{ color: palette.purple }} />
           </motion.div>
@@ -131,7 +131,7 @@ const VerificationOnboarding = () => {
             <Card key={opt.id} className="group p-8 bg-white/70 backdrop-blur-2xl border-white rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                 <div className="flex items-center gap-6">
-                  <div className="p-5 rounded-[1.5rem] transition-transform group-hover:scale-110 duration-500" style={{ backgroundColor: `${opt.color}15` }}>
+                  <div className="p-5 rounded-3xl transition-transform group-hover:scale-110 duration-500" style={{ backgroundColor: `${opt.color}15` }}>
                     <opt.icon className="w-8 h-8" style={{ color: opt.color }} />
                   </div>
                   <div>
@@ -171,7 +171,7 @@ const VerificationOnboarding = () => {
           
           <Button 
             disabled={loading}
-            className="w-full sm:w-auto px-12 h-16 rounded-[1.5rem] text-white text-lg font-black shadow-2xl hover:shadow-pink-200 transition-all active:scale-95 group overflow-hidden relative"
+            className="w-full sm:w-auto px-12 h-16 rounded-3xl text-white text-lg font-black shadow-2xl hover:shadow-pink-200 transition-all active:scale-95 group overflow-hidden relative"
             style={{ background: palette.brandGradient }}
             onClick={async () => { 
               setLoading(true); 

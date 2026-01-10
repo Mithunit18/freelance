@@ -130,7 +130,7 @@ export default function PortfolioSetupPage() {
             <p className="text-gray-500 mt-2">Introduce yourself to clients with your best work.</p>
           </motion.div>
           
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-[240px]">
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 min-w-60">
             <div className="flex justify-between text-xs font-bold mb-2 text-gray-400">
               <span>GALLERY COMPLETION</span>
               <span style={{ color: palette.blue }}>{portfolioImages.length}/5 MIN</span>
@@ -142,7 +142,7 @@ export default function PortfolioSetupPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Profile Section */}
-          <Card className="p-8 bg-white/70 backdrop-blur-xl border-white rounded-[2rem] shadow-sm flex flex-col items-center text-center h-fit">
+          <Card className="p-8 bg-white/70 backdrop-blur-xl border-white rounded-4xl shadow-sm flex flex-col items-center text-center h-fit">
             <h3 className="font-bold text-gray-800 mb-6">Profile Portrait</h3>
             <div className="relative group">
               <div className="w-40 h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-gray-100">
@@ -163,7 +163,7 @@ export default function PortfolioSetupPage() {
           </Card>
 
           {/* Gallery Section */}
-          <Card className="lg:col-span-2 p-8 bg-white/70 backdrop-blur-xl border-white rounded-[2rem] shadow-sm">
+          <Card className="lg:col-span-2 p-8 bg-white/70 backdrop-blur-xl border-white rounded-4xl shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-gray-800">Work Gallery</h3>
               <span className="text-xs font-medium px-3 py-1 bg-gray-100 rounded-full text-gray-500">{portfolioImages.length} / 20 Images</span>

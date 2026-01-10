@@ -215,7 +215,7 @@ export default function PricingPage() {
                       if (e.target.value) setSelectedTier('');
                     }}
                     placeholder={selectedTierData?.startingPrice.toString() || "Enter amount"}
-                    className="w-full pl-14 pr-6 py-6 bg-gray-50/50 border border-gray-100 rounded-[2rem] text-4xl font-black focus:outline-none focus:ring-4 transition-all placeholder:opacity-20"
+                    className="w-full pl-14 pr-6 py-6 bg-gray-50/50 border border-gray-100 rounded-4xl text-4xl font-black focus:outline-none focus:ring-4 transition-all placeholder:opacity-20"
                     // Correct implementation to avoid error
                     style={{ 
                       outlineColor: palette.purple,

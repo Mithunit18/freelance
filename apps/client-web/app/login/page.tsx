@@ -57,11 +57,17 @@ export default function LoginPage() {
       try {
         const data = await Auth.me();
         if (data && data.user) {
-          const { role } = data.user;
-          console.log(role);
+          const { role, onboarding_completed, email } = data.user;
+          console.log('User role:', role, 'Onboarding completed:', onboarding_completed);
 
-          const targetPath = role == "client" ? "/client/wizard" : "/creator/onboarding";
-          router.replace(targetPath);
+          // For clients, go to dashboard
+          if (role === "client") {
+            router.replace(`/client/dashboard/${encodeURIComponent(email)}`);
+          } else {
+            // For creators (photographer/videographer/both/creator), check onboarding status
+            const targetPath = onboarding_completed ? "/creator/dashboard" : "/creator/onboarding";
+            router.replace(targetPath);
+          }
         } else {
           setIsCheckingAuth(false);
         }
@@ -82,8 +88,18 @@ export default function LoginPage() {
       });
       if (data && data.user) {
         toast.success("Welcome back!");
-        const target = data.user.role === "client" ? "/client/wizard" : "/creator/onboarding";
-        router.push(target);
+        
+        // For clients, go to dashboard
+        if (data.user.role === "client") {
+          router.push(`/client/dashboard/${encodeURIComponent(data.user.email)}`);
+        } else {
+          // For creators, check if onboarding is completed
+          // After login, we need to fetch the full user data to check onboarding status
+          const meData = await Auth.me();
+          const onboardingCompleted = meData?.user?.onboarding_completed;
+          const target = onboardingCompleted ? "/creator/dashboard" : "/creator/onboarding";
+          router.push(target);
+        }
       }
     } catch (err: any) {
       toast.error(err?.response?.data?.detail || "Invalid email or password.");

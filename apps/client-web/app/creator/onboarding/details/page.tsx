@@ -151,7 +151,7 @@ const DetailsOnboarding = () => {
           
           {/* Left Column: Basic Info */}
           <div className="lg:col-span-5 space-y-6">
-            <Card className="p-8 bg-white/70 backdrop-blur-xl border-white rounded-[2rem] shadow-sm">
+            <Card className="p-8 bg-white/70 backdrop-blur-xl border-white rounded-4xl shadow-sm">
               <h3 className="font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: palette.blue }} />
                 Basic Information
@@ -216,7 +216,7 @@ const DetailsOnboarding = () => {
 
           {/* Right Column: Bio & Lists */}
           <div className="lg:col-span-7 space-y-6">
-            <Card className="p-8 bg-white/70 backdrop-blur-xl border-white rounded-[2rem] shadow-sm">
+            <Card className="p-8 bg-white/70 backdrop-blur-xl border-white rounded-4xl shadow-sm">
               <h3 className="font-bold text-gray-800 mb-4">Professional Bio</h3>
               <textarea
                 placeholder="Share your expertise, creative philosophy, and what makes your work unique..."
@@ -228,7 +228,7 @@ const DetailsOnboarding = () => {
             </Card>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6 bg-white/70 backdrop-blur-xl border-white rounded-[2rem] shadow-sm">
+              <Card className="p-6 bg-white/70 backdrop-blur-xl border-white rounded-4xl shadow-sm">
                 <h3 className="font-bold text-sm text-gray-800 mb-4 flex items-center gap-2">
                   <Camera className="w-4 h-4" style={{ color: palette.pink }} /> Gear List
                 </h3>
@@ -260,7 +260,7 @@ const DetailsOnboarding = () => {
                 </div>
               </Card>
 
-              <Card className="p-6 bg-white/70 backdrop-blur-xl border-white rounded-[2rem] shadow-sm">
+              <Card className="p-6 bg-white/70 backdrop-blur-xl border-white rounded-4xl shadow-sm">
                 <h3 className="font-bold text-sm text-gray-800 mb-4 flex items-center gap-2">
                   <Languages className="w-4 h-4" style={{ color: palette.blue }} /> Languages
                 </h3>

@@ -99,7 +99,7 @@ const Complete = () => {
           className="text-center mb-8"
         >
           <div className="relative inline-block">
-            <div className="w-24 h-24 rounded-[2rem] bg-white shadow-xl flex items-center justify-center mx-auto border border-gray-50">
+            <div className="w-24 h-24 rounded-4xl bg-white shadow-xl flex items-center justify-center mx-auto border border-gray-50">
               <CheckCircle2 className="w-12 h-12" style={{ color: palette.emerald }} />
             </div>
             <motion.div 
@@ -195,7 +195,7 @@ const Complete = () => {
         </div>
 
         {/* Next Steps Roadmap [cite: 61, 91] */}
-        <Card className="p-8 mt-12 bg-white/40 border-white rounded-[2rem] shadow-sm">
+        <Card className="p-8 mt-12 bg-white/40 border-white rounded-4xl shadow-sm">
           <h3 className="font-bold text-gray-800 mb-6 text-center">What's Next?</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
             {[

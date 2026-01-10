@@ -1,7 +1,6 @@
 # apps/client-api/services/creators_service.py
 from config.clients import db
 from typing import Optional, Dict, Any, List
-from models.creatorDetails import CreatorDetails
 
 CREATORS_COLLECTION = "creators"  # Make sure this matches your Firebase collection name
 ALLOWED_ROLES = ["photographer", "videographer", "both"]
@@ -67,6 +66,65 @@ def transform_creator_data(doc_data: Dict, doc_id: str) -> Dict:
         "rating": doc_data.get("rating", 4.5),  # Default rating or calculate
         "reviews": doc_data.get("reviews", 0),
     }
+
+def get_all_creators(filters: Dict = None) -> List[Dict]:
+    """Fetch all creators (photographers/videographers only) from Firebase with optional filters"""
+    try:
+        creators_ref = db.collection(CREATORS_COLLECTION)
+        creators_docs = creators_ref.get()
+        
+        creators = []
+        for doc in creators_docs:
+            doc_data = doc.to_dict()
+            
+            # Skip clients - only show photographers and videographers
+            role = doc_data.get("role", "").lower()
+            if role not in ["photographer", "videographer", "both"]:
+                continue
+                
+            transformed = transform_creator_data(doc_data, doc.id)
+            
+            # Apply filters if provided
+            if filters:
+                # Category filter
+                if filters.get("category"):
+                    if transformed.get("role", "").lower() != filters["category"].lower():
+                        continue
+                
+                # Location filter
+                if filters.get("location"):
+                    creator_city = transformed.get("city", "").lower()
+                    filter_location = filters["location"].lower()
+                    if filter_location not in creator_city:
+                        continue
+                
+                # Price filters
+                if filters.get("price_min"):
+                    if (transformed.get("starting_price") or 0) < filters["price_min"]:
+                        continue
+                if filters.get("price_max"):
+                    if (transformed.get("starting_price") or 0) > filters["price_max"]:
+                        continue
+                
+                # Rating filter
+                if filters.get("rating"):
+                    if (transformed.get("rating") or 0) < filters["rating"]:
+                        continue
+                
+                # Styles filter
+                if filters.get("styles"):
+                    creator_styles = [s.lower() for s in (transformed.get("style_tags") or [])]
+                    if not any(style.lower() in creator_styles for style in filters["styles"]):
+                        continue
+            
+            creators.append(transformed)
+        
+        print(f"✅ Fetched {len(creators)} creators (photographers/videographers)")
+        return creators
+
+    except Exception as e:
+        print(f"❌ Firestore error in get_all_creators: {e}")
+        return []
 
 def get_featured_creators() -> List[Dict]:
     """Fetch all live creators from Firebase"""

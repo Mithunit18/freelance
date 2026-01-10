@@ -20,15 +20,26 @@ class ProjectRequestCreate(BaseModel):
 
     creatorId: str
 
-    # frontend sends flat package fields
+    # frontend sends flat package fields (optional for inquiries)
     packageId: Optional[Union[str, int]] = None
-    packageName: str
-    packagePrice: Union[str, int, float]
+    packageName: Optional[str] = "Custom Inquiry"
+    packagePrice: Optional[Union[str, int, float]] = "To be discussed"
+    
+    # Inquiry flag
+    isInquiry: Optional[bool] = False
 
     serviceType: Optional[str] = None
-    eventDate: str                    # ISO string
+    category: Optional[str] = None
+    eventDate: Optional[str] = None   # ISO string, optional for inquiries
     duration: Optional[int] = None
     location: Optional[str] = None
+    budget: Optional[str] = None
+    
+    # Additional fields for styling
+    selectedStyles: Optional[list] = []
+    styleNotes: Optional[str] = None
+    pinterestLink: Optional[str] = None
+    referenceImages: Optional[list] = []
 
     message: Optional[str] = ""
 

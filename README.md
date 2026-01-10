@@ -125,7 +125,4 @@ vision-match/
 ├── pnpm-workspace.yaml      # pnpm workspace config
 └── package.json             # Root package.json
 ```
-
 ---
-
-

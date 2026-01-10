@@ -1,15 +1,43 @@
 # apps/client-api/routers/creators_route.py
-from fastapi import APIRouter, HTTPException
-from services.creators_service import get_creator_by_id, push_gallery_item, upsert_creator_section,get_featured_creators
-from typing import List
-from models.creatorDetails import CreatorDetails
+from fastapi import APIRouter, HTTPException, Query
+from services.creators_service import (
+    get_creator_by_id, 
+    push_gallery_item, 
+    upsert_creator_section,
+    get_featured_creators,
+    get_all_creators
+)
+from typing import List, Optional, Dict, Any
 
 router = APIRouter(prefix="/creators", tags=["Creators"])
 
-@router.get("/featured/", response_model=List[CreatorDetails])
+@router.get("/")
+async def get_creators(
+    category: Optional[str] = Query(None, description="Filter by category (photographer/videographer)"),
+    location: Optional[str] = Query(None, description="Filter by location/city"),
+    price_min: Optional[int] = Query(None, description="Minimum price"),
+    price_max: Optional[int] = Query(None, description="Maximum price"),
+    rating: Optional[float] = Query(None, description="Minimum rating"),
+    styles: Optional[str] = Query(None, description="Comma-separated style tags")
+):
+    """
+    Fetch all creators with optional filters
+    """
+    filters = {
+        "category": category,
+        "location": location,
+        "price_min": price_min,
+        "price_max": price_max,
+        "rating": rating,
+        "styles": styles.split(",") if styles else None
+    }
+    creators = get_all_creators(filters)
+    return {"success": True, "creators": creators, "count": len(creators)}
+
+@router.get("/featured/")
 async def get_featured():
     creators = get_featured_creators()
-    return creators
+    return {"success": True, "creators": creators, "count": len(creators)}
 
 @router.get("/{creator_id}")
 async def get_creator(creator_id: str):
