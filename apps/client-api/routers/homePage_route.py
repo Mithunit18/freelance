@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from models.homePage import HomePage
 from services.homePage_service import send_contact_email
 
-router = APIRouter(prefix="/contact", tags=["Contact"])
+router = APIRouter(prefix="/api/contact", tags=["Contact"])
 
 @router.post("/")
 async def contact_form(payload: HomePage):

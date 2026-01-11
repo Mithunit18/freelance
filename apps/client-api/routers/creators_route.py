@@ -9,7 +9,7 @@ from services.creators_service import (
 )
 from typing import List, Optional, Dict, Any
 
-router = APIRouter(prefix="/creators", tags=["Creators"])
+router = APIRouter(prefix="/api/creators", tags=["Creators"])
 
 @router.get("/")
 async def get_creators(

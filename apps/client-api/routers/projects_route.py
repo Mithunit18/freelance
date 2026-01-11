@@ -52,7 +52,7 @@ class ReviewCreate(BaseModel):
 # =========================
 # CREATE PROJECT REQUEST
 # =========================
-@router.post("/projects/request")
+@router.post("/api/projects/request")
 def create_project_request(payload: ProjectRequestCreate):
     try:
         request_id = f"req_{uuid4().hex[:8]}"
@@ -109,7 +109,7 @@ def create_project_request(payload: ProjectRequestCreate):
 # =========================
 # GET SINGLE REQUEST BY ID
 # =========================
-@router.get("/projects/request/{request_id}")
+@router.get("/api/projects/request/{request_id}")
 def get_request_by_id(request_id: str):
     """Get a single project request by ID"""
     doc_ref = db.collection(PROJECT_REQUESTS_COLLECTION).document(request_id)
@@ -127,7 +127,7 @@ def get_request_by_id(request_id: str):
 # =========================
 # RESPOND TO REQUEST
 # =========================
-@router.post("/project-request/{request_id}/respond")
+@router.post("/api/project-request/{request_id}/respond")
 def respond_to_request(request_id: str, payload: ProjectRequestResponse):
     doc_ref = db.collection(PROJECT_REQUESTS_COLLECTION).document(request_id)
     doc = doc_ref.get()
@@ -155,7 +155,7 @@ def respond_to_request(request_id: str, payload: ProjectRequestResponse):
 # =========================
 # GET REQUESTS BY CLIENT
 # =========================
-@router.get("/projects/requests/{clientId}")
+@router.get("/api/projects/requests/{clientId}")
 def get_requests_by_client(clientId: str):
     # Query Firestore for requests by this client
     docs = db.collection(PROJECT_REQUESTS_COLLECTION).where("clientId", "==", clientId).stream()
@@ -174,7 +174,7 @@ def get_requests_by_client(clientId: str):
 # =========================
 # GET REQUESTS BY CREATOR
 # =========================
-@router.get("/projects/creator-requests/{creatorId}")
+@router.get("/api/projects/creator-requests/{creatorId}")
 def get_requests_by_creator(creatorId: str):
     """Get all project requests sent to a specific creator"""
     # Query Firestore for requests by this creator
@@ -197,7 +197,7 @@ def get_requests_by_creator(creatorId: str):
 # =========================
 # NEGOTIATION / CHAT ENDPOINTS
 # =========================
-@router.post("/projects/{request_id}/messages")
+@router.post("/api/projects/{request_id}/messages")
 def send_negotiation_message(request_id: str, payload: NegotiationMessage):
     """Send a message in the negotiation chat"""
     try:
@@ -259,7 +259,7 @@ def send_negotiation_message(request_id: str, payload: NegotiationMessage):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/projects/{request_id}/messages")
+@router.get("/api/projects/{request_id}/messages")
 def get_negotiation_messages(request_id: str):
     """Get all messages for a negotiation"""
     try:
@@ -284,7 +284,7 @@ def get_negotiation_messages(request_id: str):
 # =========================
 # PAYMENT ENDPOINTS
 # =========================
-@router.post("/payments/create")
+@router.post("/api/payments/create")
 def create_payment(payload: PaymentCreate):
     """Create a payment record and booking"""
     try:
@@ -362,7 +362,7 @@ def create_payment(payload: PaymentCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/payments/{payment_id}")
+@router.get("/api/payments/{payment_id}")
 def get_payment(payment_id: str):
     """Get payment details"""
     doc_ref = db.collection(PAYMENTS_COLLECTION).document(payment_id)
@@ -375,7 +375,7 @@ def get_payment(payment_id: str):
 # =========================
 # BOOKING ENDPOINTS
 # =========================
-@router.get("/bookings/{booking_id}")
+@router.get("/api/bookings/{booking_id}")
 def get_booking(booking_id: str):
     """Get booking details"""
     doc_ref = db.collection(BOOKINGS_COLLECTION).document(booking_id)
@@ -385,7 +385,7 @@ def get_booking(booking_id: str):
     return {"success": True, "data": doc.to_dict()}
 
 
-@router.get("/bookings/client/{client_id}")
+@router.get("/api/bookings/client/{client_id}")
 def get_client_bookings(client_id: str):
     """Get all bookings for a client"""
     docs = db.collection(BOOKINGS_COLLECTION).where("clientId", "==", client_id).stream()
@@ -401,7 +401,7 @@ def get_client_bookings(client_id: str):
     }
 
 
-@router.post("/bookings/{booking_id}/confirm-event")
+@router.post("/api/bookings/{booking_id}/confirm-event")
 def confirm_event_completion(booking_id: str, payload: dict):
     """Client confirms event happened successfully"""
     try:
@@ -440,7 +440,7 @@ def confirm_event_completion(booking_id: str, payload: dict):
 # =========================
 # REVIEW ENDPOINTS
 # =========================
-@router.post("/reviews/create")
+@router.post("/api/reviews/create")
 def create_review(payload: ReviewCreate):
     """Submit a review for a booking"""
     try:
@@ -507,7 +507,7 @@ def _update_creator_rating(creator_id: str):
         print(f"Failed to update creator rating: {e}")
 
 
-@router.get("/reviews/creator/{creator_id}")
+@router.get("/api/reviews/creator/{creator_id}")
 def get_creator_reviews(creator_id: str):
     """Get all reviews for a creator"""
     docs = db.collection(REVIEWS_COLLECTION).where("creatorId", "==", creator_id).stream()

@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { getRequestDetails } from '@/services/creatorProfile';
-import { verifySession } from '@/services/clientAuth';
+import { Auth } from '@/services/Auth';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 import { palette, themeClasses } from '@/utils/theme';
@@ -151,7 +151,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        const user = await verifySession();
+        const user = await Auth.me();
         
         if (!user) {
           router.push("/login");
@@ -159,7 +159,7 @@ export default function DashboardPage() {
         }
 
         // Use email as the user identifier since that's what the auth system returns
-        const userId = user.email || user.id || user._id || user.userId;
+        const userId = user.user.email;
         console.log("User verified:", userId);
         setClientId(userId);
       } catch (err) {

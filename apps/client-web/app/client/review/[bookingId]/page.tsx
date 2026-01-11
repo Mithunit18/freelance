@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
-import { verifySession } from '@/services/clientAuth';
+import { Auth } from '@/services/Auth';
 import { getRequest } from '@/services/creatorProfile';
 import { cn } from '@vision-match/utils-js';
 import { toast } from 'react-hot-toast';
@@ -165,12 +165,12 @@ export default function ReviewPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await verifySession();
+        const user = Auth.me();
         if (!user) {
           router.push('/login');
           return;
         }
-        setClientId(user.id || user._id);
+        setClientId(user.user.email);
       } catch (err) {
         console.error('Auth check failed:', err);
         router.push('/login');

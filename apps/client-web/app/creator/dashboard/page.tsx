@@ -26,7 +26,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { verifySession } from '@/services/clientAuth';
+import { Auth } from '@/services/Auth';
 import { getCreatorRequests, updateRequestStatus, getCreator } from '@/services/creatorProfile';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
@@ -207,13 +207,13 @@ export default function CreatorDashboardPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await verifySession();
+        const user = await Auth.me();
         if (!user) {
           router.push('/login');
           return;
         }
         // Use email as creator ID
-        setCreatorId(user.email || user.id);
+        setCreatorId(user.user.email);
       } catch (err) {
         console.error('Auth check failed:', err);
         router.push('/login');

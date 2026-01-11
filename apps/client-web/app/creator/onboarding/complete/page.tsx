@@ -176,7 +176,7 @@ const Complete = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button 
             size="lg" 
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/creator/dashboard")}
             className="h-14 px-10 rounded-2xl text-white font-bold text-lg shadow-lg active:scale-95 transition-all group"
             style={{ background: palette.brandGradient }}
           >

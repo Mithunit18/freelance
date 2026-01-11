@@ -29,7 +29,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { getCreator, Creator, requestProject } from '@/services/creatorProfile';
 import { formatDate } from '@/utils/helper';
 import { useWizardStore } from '@/stores/WizardStore';
-import { verifySession } from '@/services/clientAuth';
+import { Auth } from '@/services/Auth';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 import { palette, themeClasses } from '@/utils/theme';
@@ -93,13 +93,14 @@ export default function RequestPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = await verifySession();
+        const user = await Auth.me();
+        console.log(user);
         if (!user) {
           router.push("/login");
           return;
         }
         // Use email as the client identifier since that's what the auth system returns
-        setClientId(user.email || user.id);
+        setClientId(user.user.email);
       } catch (err) {
         console.error("Auth check failed", err);
         router.push("/login");

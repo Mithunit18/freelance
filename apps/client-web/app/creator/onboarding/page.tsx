@@ -33,7 +33,7 @@ const OnboardingLanding = () => {
         const { current_step, status } = data;
 
         if (status === "completed") {
-          router.replace("/dashboard");
+          router.replace("/creator/dashboard");
           return;
         }
 

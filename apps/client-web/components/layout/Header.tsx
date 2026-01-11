@@ -11,9 +11,9 @@ import { Auth} from '@/services/Auth'; // Import our auth services
 
 const navLinks = [
   { href: '/', label: 'Home' },
-  { href: '/discover', label: 'Find Creators' },
-  { href: '/wizard', label: 'Start Project' },
-  { href: '/how-it-works', label: 'How It Works' },
+  { href: '/client/discover', label: 'Find Creators' },
+  { href: '/client/wizard', label: 'Start Project' },
+  { href: '/', label: 'How It Works' },
 ];
 
 export function Header() {
@@ -46,10 +46,14 @@ export function Header() {
   // 3. Determine Dashboard URL based on Role
   const getDashboardLink = () => {
     if (!user) return '/login';
-    return user.role === 'client' ? `/dashboard/${user.id}` : '/creator/dashboard';
+    return user.user.role === 'client' ? `/client/dashboard/${user.user.email}` : '/creator/dashboard';
   };
-
+  const getprofilelink = () => {
+    if (!user) return '/login';
+    return user.user.role === 'client' ? '/client/profile' : '/creator/profile';
+  };
   return (
+    
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -100,10 +104,10 @@ export function Header() {
                   className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white border border-gray-200 hover:border-pink-300 shadow-sm hover:shadow-md transition-all"
                 >
                   <div className="h-8 w-8 rounded-xl bg-gradient-to-tr from-pink-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
-                    {user.email?.[0].toUpperCase()}
+                    {user.user.email?.[0].toUpperCase()}
                   </div>
                   <span className="text-sm font-medium text-gray-700 max-w-[100px] truncate">
-                    {user.name || "User"}
+                    {user.user.name || "User"}
                   </span>
                   <ChevronDown className={cn("h-4 w-4 text-gray-400 transition-transform", isProfileOpen && "rotate-180")} />
                 </button>
@@ -130,7 +134,7 @@ export function Header() {
                         Dashboard
                       </Link>
                       <Link 
-                        href="/profile"
+                        href={getprofilelink()}
                         onClick={() => setIsProfileOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                       >

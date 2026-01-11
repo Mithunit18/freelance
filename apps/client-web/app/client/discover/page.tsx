@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { fetchCreators } from '@/services/fetchCreators';
-import { verifySession } from '@/services/clientAuth';
+import { Auth } from '@/services/Auth';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
@@ -302,7 +302,7 @@ export default function DiscoverPage() {
   useEffect(() => {
     const initPage = async () => {
       try {
-        const user = await verifySession();
+        const user = await Auth.me();
         
         if (!user) {
            router.push("/login");
