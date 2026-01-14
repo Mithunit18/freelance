@@ -29,11 +29,12 @@ import {
   Phone,
 } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { getRequestDetails, getPaymentStatusByRequest } from '@/services/creatorProfile';
+import { getRequestDetails, getPaymentStatusByRequest, getCreator, initiateCall } from '@/services/creatorProfile';
 import { Auth } from '@/services/Auth';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 import { palette, themeClasses } from '@/utils/theme';
+import { toast } from 'react-hot-toast';
 
 // Dummy data for bookings
 const bookings = [
@@ -153,6 +154,13 @@ export default function DashboardPage() {
   const [negotiatedDeliverables, setNegotiatedDeliverables] = useState('');
   const [offerFinalized, setOfferFinalized] = useState(false);
 
+  // Call States
+  const [callModalOpen, setCallModalOpen] = useState(false);
+  const [callRequestId, setCallRequestId] = useState<string | null>(null);
+  const [callCreatorId, setCallCreatorId] = useState<string | null>(null);
+  const [clientPhone, setClientPhone] = useState('');
+  const [isCallingInProgress, setIsCallingInProgress] = useState(false);
+
   // Auth Check
   useEffect(() => {
     const checkUserSession = async () => {
@@ -205,20 +213,27 @@ export default function DashboardPage() {
       
       setRequestDetails(requests);
       
-      // Fetch payment status for requests that are paid/accepted
+      // Fetch payment status for requests that are paid/accepted/escrowed/completed
       const paidRequests = requests.filter(r => 
-        r.status === 'paid' || r.status === 'accepted'
+        r.status === 'paid' || r.status === 'accepted' || r.status === 'escrowed' || r.status === 'completed'
       );
       
       if (paidRequests.length > 0) {
         const statusPromises = paidRequests.map(async (req) => {
           const payment = await getPaymentStatusByRequest(req.id);
+          
+          // Fetch creator details to get phone number
+          let creatorPhone = null;
+          if (req.creatorId) {
+            const creator = await getCreator(req.creatorId);
+            creatorPhone = creator?.phone_number || null;
+          }
+          
           if (payment) {
             return { 
               requestId: req.id, 
               status: payment.status,
-              // Creator phone will be added when you implement it in the backend
-              creatorPhone: payment.creator_phone || req.creatorPhone || null
+              creatorPhone: creatorPhone || payment.creator_phone || req.creatorPhone || null
             };
           }
           return null;
@@ -308,7 +323,7 @@ export default function DashboardPage() {
   const respondedCount = requestDetails.filter(r => r.status === 'responded' || r.status === 'negotiation_proposed').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-pink-50/30 to-blue-50/30 relative overflow-hidden">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 via-pink-50/30 to-blue-50/30 relative overflow-hidden">
       {/* Animated Background - Light Theme */}
       <FloatingOrb className="w-[500px] h-[500px] bg-pink-400 -top-32 -left-32" delay={0} />
       <FloatingOrb className="w-[400px] h-[400px] bg-purple-400 top-1/3 -right-32" delay={2} />
@@ -350,7 +365,7 @@ export default function DashboardPage() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="px-5 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-pink-500/30 transition-all flex items-center gap-2"
+                    className="px-5 py-3 bg-linear-to-r from-pink-500 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-pink-500/30 transition-all flex items-center gap-2"
                   >
                     <Sparkles className="h-5 w-5" />
                     New Project
@@ -410,7 +425,7 @@ export default function DashboardPage() {
                 className={cn(
                   "px-5 py-3 rounded-xl font-medium transition-all flex items-center gap-2",
                   activeTab === tab.id
-                    ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg"
+                    ? "bg-linear-to-r from-pink-500 to-purple-500 text-white shadow-lg"
                     : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 )}
               >
@@ -548,8 +563,10 @@ export default function DashboardPage() {
                         </Link>
                       )}
                       
-                      {/* Payment button for accepted status */}
-                      {request.status === 'accepted' && (
+                      {/* Payment button for accepted status - hide if payment already completed */}
+                      {request.status === 'accepted' && 
+                       !(paymentStatuses[request.id] && 
+                         (paymentStatuses[request.id].status === 'completed')) && (
                         <Link href={`/client/payment/${request.id}`} className="flex-1">
                           <motion.button
                             whileHover={{ scale: 1.02 }}
@@ -564,41 +581,35 @@ export default function DashboardPage() {
                       
                       {/* Booking link for paid status */}
                       {request.status === 'paid' && (
-                        <>
-                          <Link href={`/client/booking/${request.id}/confirmation`} className="flex-1">
-                            <motion.button
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              className="w-full py-3 px-5 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2"
-                            >
-                              <Package className="h-4 w-4" />
-                              View Booking
-                            </motion.button>
-                          </Link>
-                          
-                          {/* Call Creator button - show when payment is escrowed or completed */}
-                          {paymentStatuses[request.id] && 
-                           (paymentStatuses[request.id].status === 'escrowed' || paymentStatuses[request.id].status === 'completed') && (
-                            <motion.button
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => {
-                                // TODO: Implement call masking - for now show creator contact
-                                const creatorPhone = paymentStatuses[request.id]?.creatorPhone || request.creatorPhone;
-                                if (creatorPhone) {
-                                  window.location.href = `tel:${creatorPhone}`;
-                                } else {
-                                  // Placeholder: Navigate to a call page that will handle masking
-                                  router.push(`/client/call/${request.id}?creator=${request.creatorId}`);
-                                }
-                              }}
-                              className="flex-1 py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all flex items-center justify-center gap-2"
-                            >
-                              <Phone className="h-4 w-4" />
-                              Call Creator
-                            </motion.button>
-                          )}
-                        </>
+                        <Link href={`/client/booking/${request.id}/confirmation`} className="flex-1">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full py-3 px-5 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2"
+                          >
+                            <Package className="h-4 w-4" />
+                            View Booking
+                          </motion.button>
+                        </Link>
+                      )}
+                      
+                      {/* Call Creator button - show when payment is escrowed or completed */}
+                      {paymentStatuses[request.id] && 
+                       (paymentStatuses[request.id].status === 'escrowed' || paymentStatuses[request.id].status === 'completed') && (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            // Open call modal to get client's phone number
+                            setCallRequestId(request.id);
+                            setCallCreatorId(request.creatorId);
+                            setCallModalOpen(true);
+                          }}
+                          className="flex-1 py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all flex items-center justify-center gap-2"
+                        >
+                          <Phone className="h-4 w-4" />
+                          Call Creator
+                        </motion.button>
                       )}
                     </div>
                   </motion.div>
@@ -904,6 +915,136 @@ export default function DashboardPage() {
                         </>
                       );
                     })()}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Call Creator Modal */}
+          <AnimatePresence>
+            {callModalOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={() => {
+                  if (!isCallingInProgress) {
+                    setCallModalOpen(false);
+                    setClientPhone('');
+                  }
+                }}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Phone className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Call Creator</h3>
+                    <p className="text-gray-500 text-sm mt-1">
+                      Enter your phone number to connect with the creator securely
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={clientPhone}
+                        onChange={(e) => setClientPhone(e.target.value.replace(/[^0-9+]/g, ''))}
+                        placeholder="Enter your 10-digit phone number"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
+                        disabled={isCallingInProgress}
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        We&apos;ll call you first, then connect you to the creator
+                      </p>
+                    </div>
+
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-4 w-4 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-emerald-800">Secure Call Masking</p>
+                          <p className="text-xs text-emerald-600 mt-0.5">
+                            Your phone number is kept private. Neither party sees the other&apos;s real number.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={() => {
+                          setCallModalOpen(false);
+                          setClientPhone('');
+                        }}
+                        disabled={isCallingInProgress}
+                        className="flex-1 py-3 px-5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-all disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!clientPhone || clientPhone.length < 10) {
+                            toast.error('Please enter a valid 10-digit phone number');
+                            return;
+                          }
+                          if (!callRequestId || !clientId) {
+                            toast.error('Missing call details');
+                            return;
+                          }
+
+                          setIsCallingInProgress(true);
+                          try {
+                            const result = await initiateCall(
+                              callRequestId,
+                              clientId,
+                              clientPhone,
+                              'client'
+                            );
+
+                            if (result.success) {
+                              toast.success(result.message || 'Call initiated! You will receive a call shortly.');
+                              setCallModalOpen(false);
+                              setClientPhone('');
+                            } else {
+                              toast.error(result.message || 'Failed to initiate call');
+                            }
+                          } catch (err: any) {
+                            toast.error(err.message || 'Failed to initiate call');
+                          } finally {
+                            setIsCallingInProgress(false);
+                          }
+                        }}
+                        disabled={isCallingInProgress || !clientPhone || clientPhone.length < 10}
+                        className="flex-1 py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {isCallingInProgress ? (
+                          <>
+                            <Loader className="h-4 w-4 animate-spin" />
+                            Connecting...
+                          </>
+                        ) : (
+                          <>
+                            <Phone className="h-4 w-4" />
+                            Call Now
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               </motion.div>

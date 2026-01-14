@@ -30,5 +30,11 @@ class Settings:
     RAZORPAY_KEY_ID: str = os.getenv("RAZORPAY_KEY_ID", "rzp_test_S31nx7BlLrjWWB")
     RAZORPAY_KEY_SECRET: str = os.getenv("RAZORPAY_KEY_SECRET", "SaM0mET3XpU3rTyFJ6TlODPj")
     PAYMENT_SIMULATION_MODE: bool = os.getenv("PAYMENT_SIMULATION_MODE", "false").lower() == "true"
+    
+    # Exotel Call Masking
+    EXOTEL_SID: str = os.getenv("EXOTEL_SID", "")
+    EXOTEL_API_KEY: str = os.getenv("EXOTEL_API_KEY", "")
+    EXOTEL_API_TOKEN: str = os.getenv("EXOTEL_API_TOKEN", "")
+    EXOTEL_CALLER_ID: str = os.getenv("EXOTEL_CALLER_ID", "")
 
 settings = Settings()

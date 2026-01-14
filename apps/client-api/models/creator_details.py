@@ -5,6 +5,7 @@ class CreatorDetailsRequest(BaseModel):
     # Optional because we get it from the session token
     user_id: Optional[str] = None 
     full_name: str
+    phone_number: Optional[str] = None
     city: str
     operating_locations: List[str] = []
     years_experience: int

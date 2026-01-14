@@ -17,6 +17,7 @@ async def setup_details(request: CreatorDetailsRequest, current_user: authmesche
         details_data = {
             "email": creator_email, # Link to auth
             "full_name": request.full_name,
+            "phone_number": request.phone_number,
             "city": request.city,
             "operating_locations": request.operating_locations,
             "years_experience": request.years_experience,
@@ -67,6 +68,7 @@ async def get_details(current_user: authmeschema = Depends(get_current_user)):
         return {
             "user_id": creator_email,
             "full_name": user_data.get("full_name"),
+            "phone_number": user_data.get("phone_number"),
             "city": user_data.get("city"),
             "operating_locations": user_data.get("operating_locations", []),
             "years_experience": user_data.get("years_experience"),

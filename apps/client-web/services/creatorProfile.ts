@@ -23,6 +23,7 @@ export type Creator = {
   id: string;
   name?: string;
   full_name?: string;
+  phone_number?: string;
   role?: string;
   profileImage?: string;
   profile_photo?: string;
@@ -367,6 +368,43 @@ export const getPaymentStatusByRequest = async (requestId: string) => {
     return null;
   } catch (error) {
     // No payment found is not an error - it just means payment hasn't been made yet
+    return null;
+  }
+};
+
+/**
+ * Initiate a masked call between client and creator using Exotel
+ * Works for both client->creator and creator->client calls
+ */
+export const initiateCall = async (
+  requestId: string,
+  callerId: string,
+  callerPhone: string,
+  callerType: 'client' | 'creator'
+): Promise<{ success: boolean; message: string; call_sid?: string }> => {
+  try {
+    const response = await axiosInstance.post('/call/connect', {
+      request_id: requestId,
+      caller_id: callerId,
+      caller_phone: callerPhone,
+      caller_type: callerType,
+    });
+    return response.data;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.detail || error.message || 'Failed to initiate call';
+    return { success: false, message: errorMessage };
+  }
+};
+
+/**
+ * Get call status from Exotel
+ */
+export const getCallStatus = async (callSid: string) => {
+  try {
+    const response = await axiosInstance.get(`/call/status/${callSid}`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to get call status:', error);
     return null;
   }
 };

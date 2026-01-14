@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { 
   ArrowRight, ArrowLeft, MapPin, Briefcase, 
-  Globe, Camera, X, Plus, Loader2, Sparkles, Languages 
+  Globe, Camera, X, Plus, Loader2, Sparkles, Languages, Phone 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,6 +33,7 @@ const DetailsOnboarding = () => {
 
   const [formData, setFormData] = useState({
     fullName: "",
+    phoneNumber: "",
     city: "",
     experience: "",
     bio: "",
@@ -51,6 +52,7 @@ const DetailsOnboarding = () => {
         if (data) {
           setFormData({
             fullName: data.full_name || "",
+            phoneNumber: data.phone_number || "",
             city: data.city || "",
             experience: data.years_experience?.toString() || "",
             bio: data.bio || "",
@@ -83,7 +85,7 @@ const DetailsOnboarding = () => {
   };
 
   const handleContinue = async () => {
-    if (!formData.fullName || !formData.city || !formData.experience) {
+    if (!formData.fullName || !formData.phoneNumber || !formData.city || !formData.experience) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -93,6 +95,7 @@ const DetailsOnboarding = () => {
       const payload = {
         user_id: "me",
         full_name: formData.fullName,
+        phone_number: formData.phoneNumber,
         city: formData.city,
         operating_locations: [formData.city],
         years_experience: parseInt(formData.experience),
@@ -166,6 +169,20 @@ const DetailsOnboarding = () => {
                     value={formData.fullName}
                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   />
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: palette.gray600 }}>Phone Number *</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: palette.pink }} />
+                    <Input
+                      type="tel"
+                      className="h-12 pl-12 rounded-xl border-gray-100 bg-white/50 text-gray-600"
+                      placeholder="+91 98765 43210"
+                      value={formData.phoneNumber}
+                      onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    />
+                  </div>
                 </div>
 
                 <div>

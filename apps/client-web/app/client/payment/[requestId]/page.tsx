@@ -12,11 +12,12 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { Auth } from '@/services/Auth';
-import { getRequest } from '@/services/creatorProfile';
+import { getRequest, getCreator } from '@/services/creatorProfile';
 import { cn } from '@vision-match/utils-js';
 import { toast } from 'react-hot-toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 
 // Helper to extract error message from API errors (handles Pydantic validation errors)
 const getErrorMessage = (error: any): string => {
@@ -182,17 +183,17 @@ export default function PaymentPage() {
 
       if (storedPaymentKey) {
         const storedData = JSON.parse(localStorage.getItem(storedPaymentKey) || '{}');
-        console.log('✅ Found stored payment locally:', storedData);
+        console.log('Found stored payment locally:', storedData);
         foundPaymentId = storedData.id;
       }
 
       // 2. If not found locally, check backend (Cross-Device Persistence)
       if (!foundPaymentId) {
         try {
-          console.log('🌐 Checking backend for existing payment...');
+          console.log('Checking backend for existing payment...');
           const serverRes = await axios.get(`${API_URL}/api/escrow/${requestId}/status`);
           if (serverRes.data.success && serverRes.data.payment) {
-            console.log('✅ Found payment on server:', serverRes.data.payment);
+            console.log('Found payment on server:', serverRes.data.payment);
             foundPaymentId = serverRes.data.payment.id;
             // Cache it locally
             localStorage.setItem(foundPaymentId, JSON.stringify(serverRes.data.payment));
@@ -253,9 +254,53 @@ export default function PaymentPage() {
     try {
       setLoading(true);
       const data = await getRequest(requestId);
+      console.log('📦 Request data:', data);
 
       if (data) {
-        const baseAmount = data.current_offer?.price || data.currentOffer?.price || 25000;
+        // Use finalOffer (accepted price) first, then currentOffer, then package price, budget, or starting_price
+        // Parse package.price if it's a string like "₹50,000" or "50000"
+        const parsePrice = (priceStr: string | number | undefined): number | null => {
+          if (typeof priceStr === 'number') return priceStr > 0 ? priceStr : null;
+          if (typeof priceStr === 'string') {
+            const cleaned = priceStr.replace(/[₹,\s]/g, '').match(/\d+/);
+            return cleaned ? parseInt(cleaned[0], 10) : null;
+          }
+          return null;
+        };
+        
+        const packagePrice = parsePrice(data.package?.price);
+        const budgetPrice = parsePrice(data.budget);
+        let startingPrice = data.creator_starting_price || data.creatorStartingPrice;
+        
+        // If no starting_price in request, fetch from creator profile
+        const creatorId = data.creator_id || data.creatorId;
+        if (!startingPrice && creatorId) {
+          try {
+            console.log('🔍 Fetching creator starting_price for:', creatorId);
+            const creatorData = await getCreator(creatorId);
+            if (creatorData?.starting_price) {
+              startingPrice = creatorData.starting_price;
+              console.log('✅ Got creator starting_price:', startingPrice);
+            }
+          } catch (e) {
+            console.warn('Failed to fetch creator starting_price:', e);
+          }
+        }
+        
+        console.log('💰 Price sources:', { 
+          finalOffer: data.final_offer?.price || data.finalOffer?.price,
+          currentOffer: data.current_offer?.price || data.currentOffer?.price,
+          packagePrice, 
+          budgetPrice, 
+          startingPrice 
+        });
+        
+        const baseAmount = data.final_offer?.price || data.finalOffer?.price || 
+                          data.current_offer?.price || data.currentOffer?.price ||
+                          packagePrice || budgetPrice || startingPrice || 25000;
+        
+        console.log('✅ Using baseAmount:', baseAmount);
+        
         const platformFee = Math.round(baseAmount * 0.10);
         const gst = Math.round((baseAmount + platformFee) * 0.18);
         const finalAmount = baseAmount + platformFee + gst;
@@ -272,7 +317,8 @@ export default function PaymentPage() {
           platformFee,
           gst,
           finalAmount,
-          deliverables: data.current_offer?.deliverables || data.currentOffer?.deliverables || 'As discussed',
+          deliverables: data.final_offer?.deliverables || data.finalOffer?.deliverables ||
+                       data.current_offer?.deliverables || data.currentOffer?.deliverables || 'As discussed',
         });
       }
     } catch (err) {

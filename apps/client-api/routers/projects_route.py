@@ -51,6 +51,16 @@ def create_project_request(payload: ProjectRequestCreate):
 
         # Use Firestore collection
         doc_ref = db.collection(PROJECT_REQUESTS_COLLECTION).document(request_id)
+        
+        # Fetch creator's starting_price to store with the request
+        creator_starting_price = None
+        try:
+            creator_doc = db.collection("Users").document(payload.creatorId).get()
+            if creator_doc.exists:
+                creator_data = creator_doc.to_dict()
+                creator_starting_price = creator_data.get("starting_price")
+        except:
+            pass
 
         data = {
             "id": request_id,
@@ -71,6 +81,9 @@ def create_project_request(payload: ProjectRequestCreate):
             "duration": payload.duration,
             "location": payload.location,
             "budget": payload.budget,
+            
+            # Store creator's starting_price for payment calculation
+            "creator_starting_price": creator_starting_price,
             
             "selectedStyles": payload.selectedStyles or [],
             "styleNotes": payload.styleNotes,
@@ -130,6 +143,8 @@ def respond_to_request(request_id: str, payload: ProjectRequestResponse):
     if payload.action not in ["accept", "decline", "negotiate"]:
         raise HTTPException(status_code=400, detail="Invalid action")
 
+    request_data = doc.to_dict()
+    
     update = {
         "status": (
             "accepted" if payload.action == "accept" else
@@ -139,6 +154,52 @@ def respond_to_request(request_id: str, payload: ProjectRequestResponse):
         "creator_message": payload.message,
         "updatedAt": int(time.time() * 1000)
     }
+    
+    # When accepting, set finalOffer with the agreed price
+    if payload.action == "accept":
+        # Determine price: use currentOffer if negotiated, otherwise use package price or creator's starting price
+        current_offer = request_data.get("currentOffer")
+        if current_offer and current_offer.get("price"):
+            # Use the negotiated price
+            update["finalOffer"] = {
+                "price": current_offer.get("price"),
+                "deliverables": current_offer.get("deliverables", "As discussed")
+            }
+        else:
+            # Get price from package or fetch creator's starting_price
+            package = request_data.get("package", {})
+            package_price = package.get("price")
+            
+            # Parse package price if it's a string
+            final_price = None
+            if isinstance(package_price, (int, float)) and package_price > 0:
+                final_price = package_price
+            elif isinstance(package_price, str):
+                import re
+                match = re.search(r'[\d,]+', package_price.replace(',', ''))
+                if match:
+                    try:
+                        final_price = float(match.group().replace(',', ''))
+                    except:
+                        pass
+            
+            # If no valid package price, try to get creator's starting_price
+            if not final_price or final_price <= 0:
+                creator_id = request_data.get("creatorId")
+                if creator_id:
+                    try:
+                        creator_doc = db.collection("Users").document(creator_id).get()
+                        if creator_doc.exists:
+                            creator_data = creator_doc.to_dict()
+                            final_price = creator_data.get("starting_price", 0)
+                    except:
+                        pass
+            
+            if final_price and final_price > 0:
+                update["finalOffer"] = {
+                    "price": final_price,
+                    "deliverables": "As discussed"
+                }
 
     doc_ref.update(update)
     return {"success": True}

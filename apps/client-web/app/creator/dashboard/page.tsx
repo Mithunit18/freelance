@@ -28,9 +28,10 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Auth } from '@/services/Auth';
-import { getCreatorRequests, updateRequestStatus, getCreator, getPaymentStatusByRequest } from '@/services/creatorProfile';
+import { getCreatorRequests, updateRequestStatus, getCreator, getPaymentStatusByRequest, initiateCall } from '@/services/creatorProfile';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
+import { toast } from 'react-hot-toast';
 
 // Brand palette
 const palette = {
@@ -227,6 +228,12 @@ export default function CreatorDashboardPage() {
   // Payment status map: requestId -> payment status
   const [paymentStatuses, setPaymentStatuses] = useState<Record<string, { status: string; clientPhone?: string }>>({});
   
+  // Call States
+  const [callModalOpen, setCallModalOpen] = useState(false);
+  const [callRequestId, setCallRequestId] = useState<string | null>(null);
+  const [creatorPhone, setCreatorPhone] = useState('');
+  const [isCallingInProgress, setIsCallingInProgress] = useState(false);
+  
   // Auth Check
   useEffect(() => {
     const checkAuth = async () => {
@@ -328,15 +335,10 @@ export default function CreatorDashboardPage() {
     router.push(`/creator/requests/${requestId}/chat`);
   };
 
-  // Call client handler
+  // Call client handler - opens modal to get creator's phone
   const handleCallClient = (requestId: string, clientId: string, clientPhone?: string) => {
-    if (clientPhone) {
-      // Direct call if phone number is available
-      window.location.href = `tel:${clientPhone}`;
-    } else {
-      // Navigate to call page for call masking
-      router.push(`/creator/call/${requestId}?client=${encodeURIComponent(clientId)}`);
-    }
+    setCallRequestId(requestId);
+    setCallModalOpen(true);
   };
 
   // Filter requests
@@ -645,6 +647,136 @@ export default function CreatorDashboardPage() {
               <p className="text-sm text-gray-500 mt-1">Set up your service packages</p>
             </Link>
           </motion.div>
+          
+          {/* Call Client Modal */}
+          <AnimatePresence>
+            {callModalOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={() => {
+                  if (!isCallingInProgress) {
+                    setCallModalOpen(false);
+                    setCreatorPhone('');
+                  }
+                }}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <Phone className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900">Call Client</h3>
+                    <p className="text-gray-500 text-sm mt-1">
+                      Enter your phone number to connect with the client securely
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Your Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={creatorPhone}
+                        onChange={(e) => setCreatorPhone(e.target.value.replace(/[^0-9+]/g, ''))}
+                        placeholder="Enter your 10-digit phone number"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all"
+                        disabled={isCallingInProgress}
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        We&apos;ll call you first, then connect you to the client
+                      </p>
+                    </div>
+
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <CheckCircle className="h-4 w-4 text-emerald-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-emerald-800">Secure Call Masking</p>
+                          <p className="text-xs text-emerald-600 mt-0.5">
+                            Your phone number is kept private. Neither party sees the other&apos;s real number.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      <button
+                        onClick={() => {
+                          setCallModalOpen(false);
+                          setCreatorPhone('');
+                        }}
+                        disabled={isCallingInProgress}
+                        className="flex-1 py-3 px-5 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-all disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!creatorPhone || creatorPhone.length < 10) {
+                            toast.error('Please enter a valid 10-digit phone number');
+                            return;
+                          }
+                          if (!callRequestId || !creatorId) {
+                            toast.error('Missing call details');
+                            return;
+                          }
+
+                          setIsCallingInProgress(true);
+                          try {
+                            const result = await initiateCall(
+                              callRequestId,
+                              creatorId,
+                              creatorPhone,
+                              'creator'
+                            );
+
+                            if (result.success) {
+                              toast.success(result.message || 'Call initiated! You will receive a call shortly.');
+                              setCallModalOpen(false);
+                              setCreatorPhone('');
+                            } else {
+                              toast.error(result.message || 'Failed to initiate call');
+                            }
+                          } catch (err: any) {
+                            toast.error(err.message || 'Failed to initiate call');
+                          } finally {
+                            setIsCallingInProgress(false);
+                          }
+                        }}
+                        disabled={isCallingInProgress || !creatorPhone || creatorPhone.length < 10}
+                        className="flex-1 py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                      >
+                        {isCallingInProgress ? (
+                          <>
+                            <Loader className="h-4 w-4 animate-spin" />
+                            Connecting...
+                          </>
+                        ) : (
+                          <>
+                            <Phone className="h-4 w-4" />
+                            Call Now
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </main>
       

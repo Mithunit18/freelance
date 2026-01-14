@@ -12,3 +12,9 @@ OPENAI_API_KEY=sk-your-openai-key
 
 # Other APIs
 GROQ_API_KEY=your-groq-key
+
+# Exotel (Call Masking)
+EXOTEL_SID=your-exotel-sid
+EXOTEL_API_KEY=your-exotel-api-key
+EXOTEL_API_TOKEN=your-exotel-api-token
+EXOTEL_CALLER_ID=your-exotel-caller-id

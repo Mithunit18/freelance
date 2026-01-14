@@ -180,7 +180,24 @@ export default function BookingConfirmationPage() {
       const data = await getRequest(requestId);
       
       if (data) {
-        const baseAmount = data.current_offer?.price || data.currentOffer?.price || 25000;
+        // Use finalOffer (accepted price) first, then currentOffer, then package price, budget, or starting_price
+        // Parse package.price if it's a string like "₹50,000" or "50000"
+        const parsePrice = (priceStr: string | number | undefined): number | null => {
+          if (typeof priceStr === 'number') return priceStr;
+          if (typeof priceStr === 'string') {
+            const cleaned = priceStr.replace(/[₹,\s]/g, '').match(/\d+/);
+            return cleaned ? parseInt(cleaned[0], 10) : null;
+          }
+          return null;
+        };
+        
+        const packagePrice = parsePrice(data.package?.price);
+        const budgetPrice = parsePrice(data.budget);
+        const startingPrice = data.creator_starting_price || data.creatorStartingPrice;
+        
+        const baseAmount = data.final_offer?.price || data.finalOffer?.price ||
+                          data.current_offer?.price || data.currentOffer?.price ||
+                          packagePrice || budgetPrice || startingPrice || 25000;
         const platformFee = Math.round(baseAmount * 0.10);
         const gst = Math.round((baseAmount + platformFee) * 0.18);
         const finalAmount = baseAmount + platformFee + gst;

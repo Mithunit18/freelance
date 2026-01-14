@@ -13,6 +13,7 @@ def transform_creator_data(doc_data: Dict, doc_id: str) -> Dict:
         "name": doc_data.get("full_name", ""),
         "full_name": doc_data.get("full_name", ""),
         "email": doc_data.get("email", ""),
+        "phone_number": doc_data.get("phone_number", ""),
         "role": doc_data.get("role", ""),
         "specialisation": doc_data.get("role", "").title() if doc_data.get("role") else "Creator",
         "bio": doc_data.get("bio", ""),
