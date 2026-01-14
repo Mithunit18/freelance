@@ -16,7 +16,6 @@ router = APIRouter()
 # Collection names
 PROJECT_REQUESTS_COLLECTION = "ProjectRequests"
 PROJECT_MESSAGES_COLLECTION = "ProjectMessages"
-PAYMENTS_COLLECTION = "Payments"
 BOOKINGS_COLLECTION = "Bookings"
 REVIEWS_COLLECTION = "Reviews"
 
@@ -31,13 +30,6 @@ class NegotiationMessage(BaseModel):
     price: Optional[float] = None
     deliverables: Optional[str] = None
     type: str = "text"  # 'text', 'offer', 'counter', 'accepted'
-
-class PaymentCreate(BaseModel):
-    requestId: str
-    clientId: str
-    amount: float
-    paymentMethod: str
-    transactionId: Optional[str] = None
 
 class ReviewCreate(BaseModel):
     bookingId: str
@@ -279,97 +271,6 @@ def get_negotiation_messages(request_id: str):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# =========================
-# PAYMENT ENDPOINTS
-# =========================
-@router.post("/api/payments/create")
-def create_payment(payload: PaymentCreate):
-    """Create a payment record and booking"""
-    try:
-        # Verify request exists and is accepted
-        request_ref = db.collection(PROJECT_REQUESTS_COLLECTION).document(payload.requestId)
-        request_doc = request_ref.get()
-        if not request_doc.exists:
-            raise HTTPException(status_code=404, detail="Request not found")
-        
-        request_data = request_doc.to_dict()
-        
-        if request_data.get("status") not in ["accepted", "negotiating"]:
-            raise HTTPException(status_code=400, detail="Request must be accepted before payment")
-
-        # Create payment record
-        payment_id = f"pay_{uuid4().hex[:8]}"
-        payment_ref = db.collection(PAYMENTS_COLLECTION).document(payment_id)
-        
-        payment_data = {
-            "id": payment_id,
-            "requestId": payload.requestId,
-            "clientId": payload.clientId,
-            "creatorId": request_data.get("creatorId"),
-            "amount": payload.amount,
-            "platformFee": round(payload.amount * 0.05, 2),  # 5% platform fee
-            "gst": round(payload.amount * 0.18, 2),  # 18% GST
-            "totalAmount": round(payload.amount * 1.23, 2),  # Total with fees
-            "paymentMethod": payload.paymentMethod,
-            "transactionId": payload.transactionId or f"txn_{uuid4().hex[:12]}",
-            "status": "completed",
-            "createdAt": int(time.time() * 1000)
-        }
-        payment_ref.set(payment_data)
-
-        # Create booking record
-        booking_id = f"book_{uuid4().hex[:8]}"
-        booking_ref = db.collection(BOOKINGS_COLLECTION).document(booking_id)
-        
-        booking_data = {
-            "id": booking_id,
-            "requestId": payload.requestId,
-            "paymentId": payment_id,
-            "clientId": payload.clientId,
-            "creatorId": request_data.get("creatorId"),
-            "creatorName": request_data.get("creatorName"),
-            "creatorSpecialisation": request_data.get("creatorSpecialisation"),
-            "package": request_data.get("package"),
-            "serviceType": request_data.get("serviceType"),
-            "eventDate": request_data.get("eventDate"),
-            "location": request_data.get("location"),
-            "finalAmount": payload.amount,
-            "deliverables": request_data.get("finalOffer", {}).get("deliverables") or request_data.get("package", {}).get("name"),
-            "status": "confirmed",
-            "escrowStatus": "held",  # Funds held in escrow
-            "createdAt": int(time.time() * 1000)
-        }
-        booking_ref.set(booking_data)
-
-        # Update request status
-        request_ref.update({
-            "status": "paid",
-            "bookingId": booking_id,
-            "paymentId": payment_id,
-            "updatedAt": int(time.time() * 1000)
-        })
-
-        return {
-            "success": True,
-            "paymentId": payment_id,
-            "bookingId": booking_id
-        }
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/api/payments/{payment_id}")
-def get_payment(payment_id: str):
-    """Get payment details"""
-    doc_ref = db.collection(PAYMENTS_COLLECTION).document(payment_id)
-    doc = doc_ref.get()
-    if not doc.exists:
-        raise HTTPException(status_code=404, detail="Payment not found")
-    return {"success": True, "data": doc.to_dict()}
 
 
 # =========================

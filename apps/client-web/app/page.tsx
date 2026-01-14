@@ -822,7 +822,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="how-it-works" className="relative z-10 py-20 md:py-32 px-4 md:px-6 bg-white/30">
+      <section id="how-it-works" className="relative z-10 py-20 md:py-32 px-4 md:px-6 bg-white/30 scroll-mt-28">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

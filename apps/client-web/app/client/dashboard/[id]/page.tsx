@@ -26,9 +26,10 @@ import {
   Filter,
   Bell,
   Settings,
+  Phone,
 } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { getRequestDetails } from '@/services/creatorProfile';
+import { getRequestDetails, getPaymentStatusByRequest } from '@/services/creatorProfile';
 import { Auth } from '@/services/Auth';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
@@ -75,6 +76,8 @@ const StatusBadge = ({ status }: { status: string }) => {
     accepted: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle, label: 'Accepted' },
     declined: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', icon: XCircle, label: 'Declined' },
     paid: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', icon: DollarSign, label: 'Paid' },
+    escrowed: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200', icon: CheckCircle, label: 'Payment Held' },
+    completed: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle, label: 'Completed' },
   };
 
   const config = statusConfig[status] || statusConfig.pending_creator;
@@ -138,6 +141,9 @@ export default function DashboardPage() {
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [requestDetails, setRequestDetails] = useState<any[]>([]);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  
+  // Payment status map: requestId -> payment status (escrowed/completed)
+  const [paymentStatuses, setPaymentStatuses] = useState<Record<string, { status: string; creatorPhone?: string }>>({});
 
   // Chat / Negotiation States
   const [chatOpen, setChatOpen] = useState(false);
@@ -185,15 +191,47 @@ export default function DashboardPage() {
       const response = await getRequestDetails(clientId);
       console.log("API Raw Response:", response);
 
+      let requests: any[] = [];
       if (Array.isArray(response)) {
-        setRequestDetails(response);
+        requests = response;
       } else if (response && Array.isArray(response.data)) {
-        setRequestDetails(response.data);
+        requests = response.data;
       } else if (response && Array.isArray(response.requests)) {
-        setRequestDetails(response.requests);
+        requests = response.requests;
       } else {
         console.warn("API response is not an array:", response);
-        setRequestDetails([]); 
+        requests = []; 
+      }
+      
+      setRequestDetails(requests);
+      
+      // Fetch payment status for requests that are paid/accepted
+      const paidRequests = requests.filter(r => 
+        r.status === 'paid' || r.status === 'accepted'
+      );
+      
+      if (paidRequests.length > 0) {
+        const statusPromises = paidRequests.map(async (req) => {
+          const payment = await getPaymentStatusByRequest(req.id);
+          if (payment) {
+            return { 
+              requestId: req.id, 
+              status: payment.status,
+              // Creator phone will be added when you implement it in the backend
+              creatorPhone: payment.creator_phone || req.creatorPhone || null
+            };
+          }
+          return null;
+        });
+        
+        const statuses = await Promise.all(statusPromises);
+        const statusMap: Record<string, { status: string; creatorPhone?: string }> = {};
+        statuses.forEach(s => {
+          if (s) {
+            statusMap[s.requestId] = { status: s.status, creatorPhone: s.creatorPhone };
+          }
+        });
+        setPaymentStatuses(statusMap);
       }
 
     } catch (err: any) {
@@ -450,9 +488,13 @@ export default function DashboardPage() {
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
                           <h3 className="text-xl font-bold text-gray-900">{request.creatorName}</h3>
                           <StatusBadge status={request.status} />
+                          {/* Show payment status badge if escrowed/completed */}
+                          {paymentStatuses[request.id] && (
+                            <StatusBadge status={paymentStatuses[request.id].status} />
+                          )}
                         </div>
                         <p className="text-gray-500">{request.creatorSpecialisation}</p>
                         <p className="text-sm text-gray-400 mt-1">
@@ -522,16 +564,41 @@ export default function DashboardPage() {
                       
                       {/* Booking link for paid status */}
                       {request.status === 'paid' && (
-                        <Link href={`/client/booking/${request.id}/confirmation`} className="flex-1">
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full py-3 px-5 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2"
-                          >
-                            <Package className="h-4 w-4" />
-                            View Booking
-                          </motion.button>
-                        </Link>
+                        <>
+                          <Link href={`/client/booking/${request.id}/confirmation`} className="flex-1">
+                            <motion.button
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="w-full py-3 px-5 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2"
+                            >
+                              <Package className="h-4 w-4" />
+                              View Booking
+                            </motion.button>
+                          </Link>
+                          
+                          {/* Call Creator button - show when payment is escrowed or completed */}
+                          {paymentStatuses[request.id] && 
+                           (paymentStatuses[request.id].status === 'escrowed' || paymentStatuses[request.id].status === 'completed') && (
+                            <motion.button
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              onClick={() => {
+                                // TODO: Implement call masking - for now show creator contact
+                                const creatorPhone = paymentStatuses[request.id]?.creatorPhone || request.creatorPhone;
+                                if (creatorPhone) {
+                                  window.location.href = `tel:${creatorPhone}`;
+                                } else {
+                                  // Placeholder: Navigate to a call page that will handle masking
+                                  router.push(`/client/call/${request.id}?creator=${request.creatorId}`);
+                                }
+                              }}
+                              className="flex-1 py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all flex items-center justify-center gap-2"
+                            >
+                              <Phone className="h-4 w-4" />
+                              Call Creator
+                            </motion.button>
+                          )}
+                        </>
                       )}
                     </div>
                   </motion.div>

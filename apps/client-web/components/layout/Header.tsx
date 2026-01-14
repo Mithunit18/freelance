@@ -13,7 +13,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/client/discover', label: 'Find Creators' },
   { href: '/client/wizard', label: 'Start Project' },
-  { href: '/', label: 'How It Works' },
+  { href: '/#how-it-works', label: 'How It Works' },
 ];
 
 export function Header() {

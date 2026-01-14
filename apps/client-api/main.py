@@ -10,6 +10,7 @@ from routers import portfolio_route
 from routers import verification_route
 from routers import creators_route
 from routers import projects_route
+from routers import payment_route
 
 app = FastAPI(title="Client API")
 
@@ -32,6 +33,7 @@ app.include_router(portfolio_route.router)
 app.include_router(verification_route.router)
 app.include_router(creators_route.router)
 app.include_router(projects_route.router)
+app.include_router(payment_route.router)
 
 @app.get("/")
 def read_root():

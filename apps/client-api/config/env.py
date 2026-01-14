@@ -25,5 +25,10 @@ class Settings:
     CLOUDINARY_CLOUD_NAME: str = os.getenv("CLOUDINARY_CLOUD_NAME", "dfo7vvdka")
     CLOUDINARY_API_KEY: str = os.getenv("CLOUDINARY_API_KEY", "496531328968546")
     CLOUDINARY_API_SECRET: str = os.getenv("CLOUDINARY_API_SECRET", "mkZ7bWfP1JwwjSMDo2f9E_hIS2M")
+    
+    # Razorpay Payment Gateway (Test Credentials)
+    RAZORPAY_KEY_ID: str = os.getenv("RAZORPAY_KEY_ID", "rzp_test_S31nx7BlLrjWWB")
+    RAZORPAY_KEY_SECRET: str = os.getenv("RAZORPAY_KEY_SECRET", "SaM0mET3XpU3rTyFJ6TlODPj")
+    PAYMENT_SIMULATION_MODE: bool = os.getenv("PAYMENT_SIMULATION_MODE", "false").lower() == "true"
 
 settings = Settings()

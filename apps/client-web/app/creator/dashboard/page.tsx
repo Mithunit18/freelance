@@ -24,10 +24,11 @@ import {
   ArrowRight,
   Star,
   Eye,
+  Phone,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Auth } from '@/services/Auth';
-import { getCreatorRequests, updateRequestStatus, getCreator } from '@/services/creatorProfile';
+import { getCreatorRequests, updateRequestStatus, getCreator, getPaymentStatusByRequest } from '@/services/creatorProfile';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 
@@ -51,6 +52,8 @@ const StatusBadge = ({ status }: { status: string }) => {
     negotiation_proposed: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', icon: MessageCircle, label: 'Negotiating' },
     negotiating: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', icon: MessageCircle, label: 'Negotiating' },
     paid: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', icon: DollarSign, label: 'Paid' },
+    escrowed: { bg: 'bg-cyan-50', text: 'text-cyan-700', border: 'border-cyan-200', icon: CheckCircle, label: 'Payment Held' },
+    completed: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: CheckCircle, label: 'Completed' },
   };
 
   const config = statusConfig[status] || statusConfig.pending_creator;
@@ -72,15 +75,20 @@ const RequestCard = ({
   request, 
   onAccept, 
   onDecline, 
-  onNegotiate 
+  onNegotiate,
+  paymentStatus,
+  onCallClient,
 }: { 
   request: any;
   onAccept: (id: string) => void;
   onDecline: (id: string) => void;
   onNegotiate: (id: string) => void;
+  paymentStatus?: { status: string; clientPhone?: string };
+  onCallClient: (requestId: string, clientId: string, clientPhone?: string) => void;
 }) => {
   const isPending = request.status === 'pending_creator';
   const isInquiry = request.isInquiry;
+  const canCall = paymentStatus && (paymentStatus.status === 'escrowed' || paymentStatus.status === 'completed');
   
   return (
     <motion.div
@@ -91,7 +99,7 @@ const RequestCard = ({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <h3 className="font-bold text-gray-900">
               {isInquiry ? 'New Inquiry' : request.package?.name || 'Project Request'}
             </h3>
@@ -105,7 +113,10 @@ const RequestCard = ({
             From: {request.clientId?.split('@')[0] || 'Client'}
           </p>
         </div>
-        <StatusBadge status={request.status} />
+        <div className="flex flex-col items-end gap-2">
+          <StatusBadge status={request.status} />
+          {paymentStatus && <StatusBadge status={paymentStatus.status} />}
+        </div>
       </div>
       
       {/* Details Grid */}
@@ -168,7 +179,7 @@ const RequestCard = ({
       )}
       
       {!isPending && (
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {(request.status === 'negotiating' || request.status === 'negotiation_proposed') && (
             <Link
               href={`/creator/requests/${request.id}/chat`}
@@ -182,12 +193,22 @@ const RequestCard = ({
             href={`/creator/requests/${request.id}`}
             className={cn(
               "flex items-center justify-center gap-2 py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all",
-              (request.status === 'negotiating' || request.status === 'negotiation_proposed') ? "" : "flex-1 w-full"
+              (request.status === 'negotiating' || request.status === 'negotiation_proposed' || canCall) ? "" : "flex-1 w-full"
             )}
           >
             <Eye className="h-4 w-4" />
             View Details
           </Link>
+          {/* Call Client button - show when payment is escrowed or completed */}
+          {canCall && (
+            <button
+              onClick={() => onCallClient(request.id, request.clientId, paymentStatus?.clientPhone)}
+              className="flex-1 py-2.5 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-green-200/50"
+            >
+              <Phone className="h-4 w-4" />
+              Call Client
+            </button>
+          )}
         </div>
       )}
     </motion.div>
@@ -202,6 +223,9 @@ export default function CreatorDashboardPage() {
   const [requests, setRequests] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'pending' | 'all'>('pending');
+  
+  // Payment status map: requestId -> payment status
+  const [paymentStatuses, setPaymentStatuses] = useState<Record<string, { status: string; clientPhone?: string }>>({});
   
   // Auth Check
   useEffect(() => {
@@ -236,6 +260,34 @@ export default function CreatorDashboardPage() {
         // Fetch requests
         const data = await getCreatorRequests(creatorId);
         setRequests(data);
+        
+        // Fetch payment statuses for paid/accepted requests
+        const paidRequests = data.filter((r: any) => 
+          r.status === 'paid' || r.status === 'accepted'
+        );
+        
+        if (paidRequests.length > 0) {
+          const statusPromises = paidRequests.map(async (req: any) => {
+            const payment = await getPaymentStatusByRequest(req.id);
+            if (payment) {
+              return { 
+                requestId: req.id, 
+                status: payment.status,
+                clientPhone: payment.client_phone || req.clientPhone || null
+              };
+            }
+            return null;
+          });
+          
+          const statuses = await Promise.all(statusPromises);
+          const statusMap: Record<string, { status: string; clientPhone?: string }> = {};
+          statuses.forEach(s => {
+            if (s) {
+              statusMap[s.requestId] = { status: s.status, clientPhone: s.clientPhone };
+            }
+          });
+          setPaymentStatuses(statusMap);
+        }
       } catch (err) {
         setError('Failed to load data');
         console.error(err);
@@ -274,6 +326,17 @@ export default function CreatorDashboardPage() {
 
   const handleNegotiate = (requestId: string) => {
     router.push(`/creator/requests/${requestId}/chat`);
+  };
+
+  // Call client handler
+  const handleCallClient = (requestId: string, clientId: string, clientPhone?: string) => {
+    if (clientPhone) {
+      // Direct call if phone number is available
+      window.location.href = `tel:${clientPhone}`;
+    } else {
+      // Navigate to call page for call masking
+      router.push(`/creator/call/${requestId}?client=${encodeURIComponent(clientId)}`);
+    }
   };
 
   // Filter requests
@@ -549,6 +612,8 @@ export default function CreatorDashboardPage() {
                     onAccept={handleAccept}
                     onDecline={handleDecline}
                     onNegotiate={handleNegotiate}
+                    paymentStatus={paymentStatuses[request.id]}
+                    onCallClient={handleCallClient}
                   />
                 ))}
               </div>

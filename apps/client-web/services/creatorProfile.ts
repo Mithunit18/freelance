@@ -277,25 +277,6 @@ export const counterOffer = async (requestId: string, data: {
 };
 
 /**
- * Create payment and booking
- */
-export const createPayment = async (data: {
-  requestId: string;
-  clientId: string;
-  amount: number;
-  paymentMethod: string;
-  transactionId?: string;
-}) => {
-  try {
-    const response = await axiosInstance.post('/payments/create', data);
-    return response.data;
-  } catch (error) {
-    console.error('Failed to create payment:', error);
-    throw error;
-  }
-};
-
-/**
  * Get booking details
  */
 export const getBooking = async (bookingId: string) => {
@@ -370,5 +351,22 @@ export const getCreatorReviewsList = async (creatorId: string) => {
   } catch (error) {
     console.error('Failed to get creator reviews:', error);
     return [];
+  }
+};
+
+/**
+ * Get payment status for a request
+ * Returns payment details including status (pending, escrowed, completed)
+ */
+export const getPaymentStatusByRequest = async (requestId: string) => {
+  try {
+    const response = await axiosInstance.get(`/escrow/${requestId}/status`);
+    if (response.data?.success && response.data?.payment) {
+      return response.data.payment;
+    }
+    return null;
+  } catch (error) {
+    // No payment found is not an error - it just means payment hasn't been made yet
+    return null;
   }
 };
