@@ -201,20 +201,25 @@ export default function RequestPage() {
     setSubmitError(null);
     setSubmitSuccess(false);
 
+    if (!creator) {
+      setSubmitError("Creator information not available");
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const payload = {
         clientId: clientId,
         creatorId: creator.id,
-        packageId: selectedPackage?.id || selectedPackageIndex || null,
+        packageId: selectedPackage?.id || selectedPackageIndex || undefined,
         packageName: selectedPackage?.name || 'Custom Inquiry',
         packagePrice: selectedPackage?.price || 'To be discussed',
-        isInquiry: isInquiry,
         
         serviceType: serviceType || category || 'Photography',
-        category,
+        category: category || undefined,
         location: location || '',
-        eventDate: eventDate ? (typeof eventDate === 'string' ? eventDate : (eventDate as any).toISOString?.() || eventDate) : null,
-        duration: duration || null,
+        eventDate: eventDate ? (typeof eventDate === 'string' ? eventDate : (eventDate as any).toISOString?.() || String(eventDate)) : '',
+        duration: duration || undefined,
         budget: budget || 'To be discussed',
         selectedStyles,
         styleNotes,
@@ -233,7 +238,7 @@ export default function RequestPage() {
 
       const result = await requestProject(payload);
 
-      if (result.success) {
+      if (result?.success) {
         setSubmitSuccess(true);
         resetWizard();
 
