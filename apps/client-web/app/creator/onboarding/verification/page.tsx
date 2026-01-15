@@ -69,7 +69,7 @@ const VerificationOnboarding = () => {
       
       setVerifications(prev => ({ ...prev, [activeUpload.id]: "submitted" }));
       toast.success("Document submitted for review", { id: loadingToast });
-    } catch (err: any) {
+    } catch (err: unknown) {
       toast.error("Upload failed. Please try again.", { id: loadingToast });
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = "";

@@ -537,7 +537,7 @@ export default function Home() {
       try {
         const data = await Auth.me();
         if (data && data.user) setUser(data.user);
-      } catch (err) {
+      } catch (err: unknown) {
         setUser(null);
       } finally {
         setLoading(false);
@@ -552,7 +552,7 @@ export default function Home() {
       await Auth.logout(); 
       setUser(null);
       toast.success("Logged out successfully", { id: t });
-    } catch (err) {
+    } catch (err: unknown) {
       toast.error("Logout failed", { id: t });
     }
   };

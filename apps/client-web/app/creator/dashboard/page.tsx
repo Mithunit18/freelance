@@ -245,7 +245,7 @@ export default function CreatorDashboardPage() {
         }
         // Use email as creator ID
         setCreatorId(user.user.email);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Auth check failed:', err);
         router.push('/login');
       }
@@ -295,7 +295,7 @@ export default function CreatorDashboardPage() {
           });
           setPaymentStatuses(statusMap);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         setError('Failed to load data');
         console.error(err);
       } finally {
@@ -314,7 +314,7 @@ export default function CreatorDashboardPage() {
         const data = await getCreatorRequests(creatorId);
         setRequests(data);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to accept request:', err);
     }
   };
@@ -326,7 +326,7 @@ export default function CreatorDashboardPage() {
         const data = await getCreatorRequests(creatorId);
         setRequests(data);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to decline request:', err);
     }
   };
@@ -750,8 +750,8 @@ export default function CreatorDashboardPage() {
                             } else {
                               toast.error(result.message || 'Failed to initiate call');
                             }
-                          } catch (err: any) {
-                            toast.error(err.message || 'Failed to initiate call');
+                          } catch (err: unknown) {
+                            toast.error(err instanceof Error ? err.message : 'Failed to initiate call');
                           } finally {
                             setIsCallingInProgress(false);
                           }

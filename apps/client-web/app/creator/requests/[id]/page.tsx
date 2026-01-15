@@ -116,7 +116,7 @@ export default function CreatorRequestDetailPage() {
         } else {
           setRequest(data);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Error:', err);
         setError('Failed to load request');
       } finally {
@@ -145,7 +145,7 @@ export default function CreatorRequestDetailPage() {
       if (action === 'negotiate') {
         router.push(`/creator/requests/${requestId}/chat`);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(`Failed to ${action} request:`, err);
     } finally {
       setActionLoading(null);

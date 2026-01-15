@@ -101,8 +101,8 @@ export default function RequestPage() {
         }
         // Use email as the client identifier since that's what the auth system returns
         setClientId(user.user.email);
-      } catch (err) {
-        console.error("Auth check failed", err);
+      } catch (err: unknown) {
+        console.error("Auth check failed", err instanceof Error ? err.message : err);
         router.push("/login");
       } finally {
         setIsAuthChecking(false);
@@ -134,8 +134,8 @@ export default function RequestPage() {
         setError("Creator not found");
       }
       setCreator(creatorData);
-    } catch (err) {
-      console.error("Failed to fetch creator data:", err);
+    } catch (err: unknown) {
+      console.error("Failed to fetch creator data:", err instanceof Error ? err.message : err);
       setError("Unable to load creator details for request.");
     } finally {
       setLoading(false);
@@ -218,7 +218,7 @@ export default function RequestPage() {
         serviceType: serviceType || category || 'Photography',
         category: category || undefined,
         location: location || '',
-        eventDate: eventDate ? (typeof eventDate === 'string' ? eventDate : (eventDate as any).toISOString?.() || String(eventDate)) : '',
+        eventDate: eventDate ? (typeof eventDate === 'string' ? eventDate : String(eventDate)) : '',
         duration: duration || undefined,
         budget: budget || 'To be discussed',
         selectedStyles,
@@ -247,8 +247,8 @@ export default function RequestPage() {
       } else {
         setSubmitError(result.error || "Failed to submit request");
       }
-    } catch (err: any) {
-      const errorMessage = err?.message || "An unexpected error occurred";
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred";
       setSubmitError(errorMessage);
     } finally {
       setSubmitting(false);

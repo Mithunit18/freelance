@@ -71,7 +71,7 @@ export default function LoginPage() {
         } else {
           setIsCheckingAuth(false);
         }
-      } catch (err) {
+      } catch (err: unknown) {
         setIsCheckingAuth(false);
       }
     };
@@ -101,8 +101,9 @@ export default function LoginPage() {
           router.push(target);
         }
       }
-    } catch (err: any) {
-      toast.error(err?.response?.data?.detail || "Invalid email or password.");
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError?.response?.data?.detail || "Invalid email or password.");
     } finally {
       setLoading(false);
     }

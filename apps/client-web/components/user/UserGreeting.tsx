@@ -14,7 +14,7 @@ export default function UserGreeting() {
         setLoading(true);
         const data = await userService.getCurrentUser();
         setUser(data);
-      } catch (err) {
+      } catch (err: unknown) {
         setError('Failed to fetch user data');
         console.error(err);
       } finally {

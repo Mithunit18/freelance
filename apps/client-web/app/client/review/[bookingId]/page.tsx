@@ -165,7 +165,7 @@ export default function ReviewPage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const user = Auth.me();
+        const user = await Auth.me();
         if (!user) {
           router.push('/login');
           return;

@@ -151,7 +151,7 @@ export default function PaymentPage() {
           return;
         }
         setClientId(user.user.email);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Auth check failed:', err);
         router.push('/login');
       } finally {
@@ -321,7 +321,7 @@ export default function PaymentPage() {
                        data.current_offer?.deliverables || data.currentOffer?.deliverables || 'As discussed',
         });
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to fetch order:', err);
       toast.error('Failed to load order details');
     } finally {
@@ -418,7 +418,7 @@ export default function PaymentPage() {
                 const updatedData = { ...paymentData, status: 'escrowed' };
                 localStorage.setItem(payment_id, JSON.stringify(updatedData));
               }
-            } catch (err) {
+            } catch (err: unknown) {
               console.error('Verification failed', err);
               toast.error('Payment verification failed');
               setMessage('❌ Payment verification failed. Please contact support.');

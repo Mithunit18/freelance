@@ -85,8 +85,9 @@ export default function SignupPage() {
       });
       toast.success("Account created successfully!");
       router.push(data.role === 'client' ? '/client/wizard' : '/creator/onboarding');
-    } catch (err: any) {
-      toast.error(err?.response?.data?.detail || "Registration failed.");
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } };
+      toast.error(axiosError?.response?.data?.detail || "Registration failed.");
     } finally {
       setLoading(false);
     }

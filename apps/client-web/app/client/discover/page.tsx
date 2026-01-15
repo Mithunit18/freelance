@@ -314,7 +314,7 @@ export default function DiscoverPage() {
         console.log("Fetched creators data:", res);
         setCreatorList(res || []);
 
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Failed to initialize discover page', err);
         setError('Unable to load creators at this time.');
       } finally {

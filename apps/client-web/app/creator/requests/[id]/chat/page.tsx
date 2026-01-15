@@ -89,7 +89,7 @@ export default function CreatorChatPage() {
         // Fetch messages - correct response path is .messages
         const messagesRes = await axiosInstance.get(`/projects/${requestId}/messages`);
         setMessages(messagesRes.data?.messages || []);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Error:', err);
         setError('Failed to load chat');
       } finally {
@@ -103,7 +103,7 @@ export default function CreatorChatPage() {
       try {
         const messagesRes = await axiosInstance.get(`/projects/${requestId}/messages`);
         setMessages(messagesRes.data?.messages || []);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error('Error polling messages:', err);
       }
     }, 3000);
@@ -129,7 +129,7 @@ export default function CreatorChatPage() {
       // Refresh messages - correct response path is .messages
       const messagesRes = await axiosInstance.get(`/projects/${requestId}/messages`);
       setMessages(messagesRes.data?.messages || []);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to send message:', err);
     } finally {
       setSending(false);
@@ -158,7 +158,7 @@ export default function CreatorChatPage() {
       // Refresh messages - correct response path is .messages
       const messagesRes = await axiosInstance.get(`/projects/${requestId}/messages`);
       setMessages(messagesRes.data?.messages || []);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to send offer:', err);
     } finally {
       setSending(false);
@@ -184,7 +184,7 @@ export default function CreatorChatPage() {
       setRequest(requestData);
       const messagesRes = await axiosInstance.get(`/projects/${requestId}/messages`);
       setMessages(messagesRes.data?.messages || []);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Failed to accept offer:', err);
     } finally {
       setSending(false);

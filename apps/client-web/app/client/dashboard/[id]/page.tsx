@@ -176,7 +176,7 @@ export default function DashboardPage() {
         const userId = user.user.email;
         console.log("User verified:", userId);
         setClientId(userId);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Session verification failed:", err);
         router.push("/login");
       } finally {
@@ -249,8 +249,8 @@ export default function DashboardPage() {
         setPaymentStatuses(statusMap);
       }
 
-    } catch (err: any) {
-      setError(err?.message || "Failed to load request details");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to load request details");
       console.error("Error fetching request details:", err);
       setRequestDetails([]);
     } finally {
@@ -1023,8 +1023,8 @@ export default function DashboardPage() {
                             } else {
                               toast.error(result.message || 'Failed to initiate call');
                             }
-                          } catch (err: any) {
-                            toast.error(err.message || 'Failed to initiate call');
+                          } catch (err: unknown) {
+                            toast.error(err instanceof Error ? err.message : 'Failed to initiate call');
                           } finally {
                             setIsCallingInProgress(false);
                           }

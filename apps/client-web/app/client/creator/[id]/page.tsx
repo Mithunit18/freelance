@@ -192,7 +192,7 @@ function useCreatorData(id: string | undefined) {
       } else {
         setCreator(creatorData);
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Failed to fetch creator:", err);
       setError("Unable to load creator details due to a network or server error.");
     } finally {
