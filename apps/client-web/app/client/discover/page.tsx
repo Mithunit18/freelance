@@ -163,7 +163,7 @@ const CreatorCard = ({ creator, index, favorites, toggleFavorite }: {
               </span>
             )) || (
               <span className="text-xs font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 py-1.5 rounded-full shadow-lg">
-                {creator.role?.charAt(0).toUpperCase() + creator.role?.slice(1) || 'Creator'}
+                {creator.role ? creator.role.charAt(0).toUpperCase() + creator.role.slice(1) : 'Creator'}
               </span>
             )}
           </div>
@@ -177,7 +177,7 @@ const CreatorCard = ({ creator, index, favorites, toggleFavorite }: {
                 {creator.name || creator.full_name || 'Creator'}
               </h3>
               <p className="text-sm text-gray-500">
-                {creator.specialisation || creator.role?.charAt(0).toUpperCase() + creator.role?.slice(1) || 'Creative Professional'}
+                {creator.specialisation || (creator.role ? creator.role.charAt(0).toUpperCase() + creator.role.slice(1) : 'Creative Professional')}
               </p>
             </div>
             <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-lg">
