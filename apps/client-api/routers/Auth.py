@@ -24,8 +24,8 @@ async def signup(request: signupschema, response: Response):
         key=COOKIE_NAME,
         value=quote(json_str), # Securely encode for cookie safety
         httponly=True,
-        samesite="lax",
-        secure=False, 
+        samesite="none",
+        secure=True, 
         max_age=MAX_AGE,
         path="/"
     )
@@ -44,8 +44,8 @@ async def login(request: loginschema, response: Response):
         key=COOKIE_NAME,
         value=quote(json_str), # Securely encode for cookie safety
         httponly=True,
-        samesite="lax",
-        secure=False, 
+        samesite="none",
+        secure=True, 
         max_age=MAX_AGE,
         path="/"
     )

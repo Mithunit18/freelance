@@ -2,29 +2,29 @@ import axiosInstance from '@/utils/axiosInstance';
 
 export const onboardingService = {
   getStatus: async () => {
-    const response = await axiosInstance.get('/creator/onboarding/status');
+    const response = await axiosInstance.get('/api/creator/onboarding/status');
     return response.data;
   },
 
   start: async () => {
-    const response = await axiosInstance.post('/creator/onboarding/start');
+    const response = await axiosInstance.post('/api/creator/onboarding/start');
     return response.data;
   },
 
   complete: async () => {
-    const response = await axiosInstance.post('/creator/onboarding/complete');
+    const response = await axiosInstance.post('/api/creator/onboarding/complete');
     return response.data;
   },
 };
 
 export const portfolioService = {
   setup: async (data: any) => {
-    const response = await axiosInstance.post('/creator/portfolio/setup', data);
+    const response = await axiosInstance.post('/api/creator/portfolio/setup', data);
     return response.data;
   },
 
   get: async () => {
-    const response = await axiosInstance.get('/creator/portfolio/get');
+    const response = await axiosInstance.get('/api/creator/portfolio/get');
     return response.data;
   },
 
@@ -32,7 +32,7 @@ export const portfolioService = {
     const formData = new FormData();
     formData.append('file', file);
     console.log("initiated");
-    const response = await axiosInstance.post('/creator/portfolio/upload-image', formData, {
+    const response = await axiosInstance.post('/api/creator/portfolio/upload-image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;
@@ -41,36 +41,36 @@ export const portfolioService = {
 
 export const pricingService = {
   setup: async (data: any) => {
-    const response = await axiosInstance.post('/creator/pricing/setup', data);
+    const response = await axiosInstance.post('/api/creator/pricing/setup', data);
     return response.data;
   },
 
   get: async () => {
-    const response = await axiosInstance.get('/creator/pricing/get');
+    const response = await axiosInstance.get('/api/creator/pricing/get');
     return response.data;
   },
 };
 
 export const detailsService = {
   setup: async (data: any) => {
-    const response = await axiosInstance.post('/creator/details/setup', data);
+    const response = await axiosInstance.post('/api/creator/details/setup', data);
     return response.data;
   },
 
   get: async () => {
-    const response = await axiosInstance.get('/creator/details/get');
+    const response = await axiosInstance.get('/api/creator/details/get');
     return response.data;
   },
 };
 
 export const verificationService = {
   submit: async (data: any) => {
-    const response = await axiosInstance.post('/creator/verification/submit', data);
+    const response = await axiosInstance.post('/api/creator/verification/submit', data);
     return response.data;
   },
 
   getStatus: async () => {
-    const response = await axiosInstance.get('/creator/verification/status');
+    const response = await axiosInstance.get('/api/creator/verification/status');
     return response.data;
   },
 
@@ -78,7 +78,7 @@ export const verificationService = {
     const formData = new FormData();
     formData.append('file', file);
     console.log("initiated");
-    const response = await axiosInstance.post('/creator/verification/upload-document', formData, {
+    const response = await axiosInstance.post('/api/creator/verification/upload-document', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;

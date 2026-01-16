@@ -66,7 +66,7 @@ export const getCreator = async (creatorId: string): Promise<Creator | null> => 
   try {
     // Decode the ID first in case it comes URL-encoded from the router
     const decodedId = decodeURIComponent(creatorId);
-    const response = await axiosInstance.get(`/creators/${decodedId}`);
+    const response = await axiosInstance.get(`/api/creators/${decodedId}`);
     // Backend returns { success: true, data: {...} }
     const creatorData = response.data?.data || response.data?.creator || null;
     console.log('Creator data fetched:', creatorData);
@@ -87,7 +87,7 @@ export const getCreator = async (creatorId: string): Promise<Creator | null> => 
  */
 export const getCreatorPortfolio = async (creatorId: string) => {
   try {
-    const response = await axiosInstance.get(`/creators/${creatorId}/portfolio`);
+    const response = await axiosInstance.get(`/api/creators/${creatorId}/portfolio`);
     return response.data?.portfolio || response.data || [];
   } catch (error) {
     console.error('Failed to get portfolio:', error);
@@ -100,7 +100,7 @@ export const getCreatorPortfolio = async (creatorId: string) => {
  */
 export const getCreatorReviews = async (creatorId: string): Promise<CreatorReview[]> => {
   try {
-    const response = await axiosInstance.get(`/creators/${creatorId}/reviews`);
+    const response = await axiosInstance.get(`/api/creators/${creatorId}/reviews`);
     return response.data?.reviews || response.data || [];
   } catch (error) {
     console.error('Failed to get reviews:', error);
@@ -133,7 +133,7 @@ export const requestProject = async (data: {
 }) => {
   try {
     // Call the correct backend endpoint
-    const response = await axiosInstance.post('/projects/request', data);
+    const response = await axiosInstance.post('/api/projects/request', data);
     return response.data;
   } catch (error) {
     console.error('Failed to submit request:', error);
@@ -148,7 +148,7 @@ export const getRequestDetails = async (clientId: string) => {
   try {
     // Decode in case it comes URL-encoded
     const decodedId = decodeURIComponent(clientId);
-    const response = await axiosInstance.get(`/projects/requests/${decodedId}`);
+    const response = await axiosInstance.get(`/api/projects/requests/${decodedId}`);
     return response.data?.data || response.data?.requests || [];
   } catch (error) {
     console.error('Failed to get request details:', error);
@@ -161,7 +161,7 @@ export const getRequestDetails = async (clientId: string) => {
  */
 export const getRequest = async (requestId: string) => {
   try {
-    const response = await axiosInstance.get(`/projects/request/${requestId}`);
+    const response = await axiosInstance.get(`/api/projects/request/${requestId}`);
     return response.data?.data || response.data;
   } catch (error) {
     console.error('Failed to get request:', error);
@@ -175,7 +175,7 @@ export const getRequest = async (requestId: string) => {
 export const getCreatorRequests = async (creatorId: string) => {
   try {
     const decodedId = decodeURIComponent(creatorId);
-    const response = await axiosInstance.get(`/projects/creator-requests/${decodedId}`);
+    const response = await axiosInstance.get(`/api/projects/creator-requests/${decodedId}`);
     return response.data?.data || response.data?.requests || [];
   } catch (error) {
     console.error('Failed to get creator requests:', error);
@@ -188,7 +188,7 @@ export const getCreatorRequests = async (creatorId: string) => {
  */
 export const updateRequestStatus = async (requestId: string, action: 'accept' | 'decline' | 'negotiate', message?: string) => {
   try {
-    const response = await axiosInstance.post(`/project-request/${requestId}/respond`, { 
+    const response = await axiosInstance.post(`/api/project-request/${requestId}/respond`, { 
       action,
       message: message || ''
     });
@@ -211,7 +211,7 @@ export const sendNegotiationMessage = async (requestId: string, data: {
   deliverables?: string;
 }) => {
   try {
-    const response = await axiosInstance.post(`/projects/${requestId}/messages`, data);
+    const response = await axiosInstance.post(`/api/projects/${requestId}/messages`, data);
     return response.data;
   } catch (error) {
     console.error('Failed to send message:', error);
@@ -224,7 +224,7 @@ export const sendNegotiationMessage = async (requestId: string, data: {
  */
 export const getNegotiationMessages = async (requestId: string) => {
   try {
-    const response = await axiosInstance.get(`/projects/${requestId}/messages`);
+    const response = await axiosInstance.get(`/api/projects/${requestId}/messages`);
     return response.data?.messages || [];
   } catch (error) {
     console.error('Failed to get messages:', error);
@@ -237,7 +237,7 @@ export const getNegotiationMessages = async (requestId: string) => {
  */
 export const acceptOffer = async (requestId: string, senderId: string, price: number, deliverables: string) => {
   try {
-    const response = await axiosInstance.post(`/projects/${requestId}/messages`, {
+    const response = await axiosInstance.post(`/api/projects/${requestId}/messages`, {
       sender: 'client',
       senderId,
       message: 'Offer accepted! Ready to proceed with payment.',
@@ -262,7 +262,7 @@ export const counterOffer = async (requestId: string, data: {
   message?: string;
 }) => {
   try {
-    const response = await axiosInstance.post(`/projects/${requestId}/messages`, {
+    const response = await axiosInstance.post(`/api/projects/${requestId}/messages`, {
       sender: 'client',
       senderId: data.senderId,
       message: data.message || 'Here is my counter offer',
@@ -282,7 +282,7 @@ export const counterOffer = async (requestId: string, data: {
  */
 export const getBooking = async (bookingId: string) => {
   try {
-    const response = await axiosInstance.get(`/bookings/${bookingId}`);
+    const response = await axiosInstance.get(`/api/bookings/${bookingId}`);
     return response.data?.data || response.data;
   } catch (error) {
     console.error('Failed to get booking:', error);
@@ -296,7 +296,7 @@ export const getBooking = async (bookingId: string) => {
 export const getClientBookings = async (clientId: string) => {
   try {
     const decodedId = decodeURIComponent(clientId);
-    const response = await axiosInstance.get(`/bookings/client/${decodedId}`);
+    const response = await axiosInstance.get(`/api/bookings/client/${decodedId}`);
     return response.data?.data || [];
   } catch (error) {
     console.error('Failed to get client bookings:', error);
@@ -309,7 +309,7 @@ export const getClientBookings = async (clientId: string) => {
  */
 export const confirmEventCompletion = async (bookingId: string, confirmed: boolean, reason?: string) => {
   try {
-    const response = await axiosInstance.post(`/bookings/${bookingId}/confirm-event`, {
+    const response = await axiosInstance.post(`/api/bookings/${bookingId}/confirm-event`, {
       confirmed,
       reason
     });
@@ -333,7 +333,7 @@ export const submitReview = async (data: {
   recommend?: boolean;
 }) => {
   try {
-    const response = await axiosInstance.post('/reviews/create', data);
+    const response = await axiosInstance.post('/api/reviews/create', data);
     return response.data;
   } catch (error) {
     console.error('Failed to submit review:', error);
@@ -347,7 +347,7 @@ export const submitReview = async (data: {
 export const getCreatorReviewsList = async (creatorId: string) => {
   try {
     const decodedId = decodeURIComponent(creatorId);
-    const response = await axiosInstance.get(`/reviews/creator/${decodedId}`);
+    const response = await axiosInstance.get(`/api/reviews/creator/${decodedId}`);
     return response.data?.data || [];
   } catch (error) {
     console.error('Failed to get creator reviews:', error);
@@ -361,7 +361,7 @@ export const getCreatorReviewsList = async (creatorId: string) => {
  */
 export const getPaymentStatusByRequest = async (requestId: string) => {
   try {
-    const response = await axiosInstance.get(`/escrow/${requestId}/status`);
+    const response = await axiosInstance.get(`/api/escrow/${requestId}/status`);
     if (response.data?.success && response.data?.payment) {
       return response.data.payment;
     }
@@ -383,7 +383,7 @@ export const initiateCall = async (
   callerType: 'client' | 'creator'
 ): Promise<{ success: boolean; message: string; call_sid?: string }> => {
   try {
-    const response = await axiosInstance.post('/call/connect', {
+    const response = await axiosInstance.post('/api/call/connect', {
       request_id: requestId,
       caller_id: callerId,
       caller_phone: callerPhone,
@@ -401,7 +401,7 @@ export const initiateCall = async (
  */
 export const getCallStatus = async (callSid: string) => {
   try {
-    const response = await axiosInstance.get(`/call/status/${callSid}`);
+    const response = await axiosInstance.get(`/api/call/status/${callSid}`);
     return response.data;
   } catch (error) {
     console.error('Failed to get call status:', error);

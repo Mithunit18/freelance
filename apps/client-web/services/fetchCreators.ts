@@ -43,7 +43,7 @@ export type Creator = {
  */
 export const fetchCreators = async (): Promise<Creator[]> => {
   try {
-    const response = await axiosInstance.get('/creators');
+    const response = await axiosInstance.get('/api/creators');
     return response.data?.creators || response.data || [];
   } catch (error) {
     console.error('Failed to fetch creators:', error);
@@ -71,7 +71,7 @@ export const fetchCreatorsWithFilters = async (filters: {
     if (filters.rating) params.append('rating', filters.rating.toString());
     if (filters.styles?.length) params.append('styles', filters.styles.join(','));
 
-    const response = await axiosInstance.get(`/creators?${params.toString()}`);
+    const response = await axiosInstance.get(`/api/creators?${params.toString()}`);
     return response.data?.creators || response.data || [];
   } catch (error) {
     console.error('Failed to fetch filtered creators:', error);
@@ -90,7 +90,7 @@ export const fetchMatchedCreators = async (preferences: {
   styles: string[];
 }): Promise<Creator[]> => {
   try {
-    const response = await axiosInstance.post('/creators/match', preferences);
+    const response = await axiosInstance.post('/api/creators/match', preferences);
     return response.data?.creators || response.data || [];
   } catch (error) {
     console.error('Failed to fetch matched creators:', error);
