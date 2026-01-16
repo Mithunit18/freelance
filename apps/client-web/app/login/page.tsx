@@ -102,8 +102,13 @@ export default function LoginPage() {
         }
       }
     } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { detail?: string } } };
-      toast.error(axiosError?.response?.data?.detail || "Invalid email or password.");
+      const axiosError = err as { response?: { data?: { detail?: string | Array<{ msg: string }> } } };
+      const detail = axiosError?.response?.data?.detail;
+      // Handle FastAPI validation errors (422) which return detail as an array
+      const errorMessage = Array.isArray(detail) 
+        ? detail.map(e => e.msg).join(', ')
+        : (typeof detail === 'string' ? detail : "Invalid email or password.");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

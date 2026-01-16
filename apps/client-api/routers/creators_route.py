@@ -11,7 +11,7 @@ from typing import List, Optional, Dict, Any
 
 router = APIRouter(prefix="/api/creators", tags=["Creators"])
 
-@router.get("/")
+@router.get("")
 async def get_creators(
     category: Optional[str] = Query(None, description="Filter by category (photographer/videographer)"),
     location: Optional[str] = Query(None, description="Filter by location/city"),
