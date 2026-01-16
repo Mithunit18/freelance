@@ -7,23 +7,11 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN pip install uv
+# Copy dependency file
+COPY requirements.txt ./
 
-# Copy only dependency files first (for layer caching)
-COPY pyproject.toml ./
-
-# Install dependencies only (NOT the project itself)
-RUN uv pip install --system \
-    fastapi \
-    uvicorn \
-    bcrypt \
-    cloudinary \
-    email-validator \
-    firebase-admin \
-    python-dotenv \
-    python-multipart \
-    razorpay
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the backend code
 COPY . .
@@ -31,5 +19,5 @@ COPY . .
 # Optional
 EXPOSE 8000
 
-# Start the app (use Railway's assigned port)
+# Start the app using Railway's assigned port
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port $PORT"]
