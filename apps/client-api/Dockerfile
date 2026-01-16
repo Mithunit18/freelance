@@ -8,13 +8,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy dependency file
-COPY requirements.txt ./
+COPY apps/client-api/requirements.txt ./
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the backend code
-COPY . .
+COPY apps/client-api/ .
 
 # Optional
 EXPOSE 8000
