@@ -28,8 +28,8 @@ RUN uv pip install --system \
 # Copy the rest of the backend code
 COPY . .
 
-# Expose FastAPI port
+# Optional
 EXPOSE 8000
 
-# Start the app
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start the app (use Railway's assigned port)
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port $PORT"]
