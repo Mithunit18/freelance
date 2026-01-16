@@ -16,7 +16,7 @@ from routers import call_route
 app = FastAPI(title="Client API")
 
 # CORS
-# trigger  redeploy
+# trigger redeploy
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
