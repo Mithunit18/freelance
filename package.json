@@ -1,0 +1,28 @@
+{
+  "name": "vision-match",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "dev": "turbo run dev --ui=tui",
+  "dev:client": "turbo run dev --filter=client-web --filter=client-api --ui=tui",
+  "dev:admin": "turbo run dev --filter=admin-web --filter=admin-api --ui=tui",
+
+  "dev:mobile": "echo \"Mobile template work is still pending...\"",
+
+  "dev:client-web": "turbo run dev --filter=client-web",
+  "dev:client-api": "turbo run dev --filter=client-api",
+  "dev:admin-web": "turbo run dev --filter=admin-web",
+  "dev:admin-api": "turbo run dev --filter=admin-api",
+  "dev:mobile-api": "turbo run dev --filter=mobile-api",
+  "build": "turbo run build",
+  "lint": "turbo run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "devDependencies": {
+    "turbo": "^2.6.1"
+  }
+}

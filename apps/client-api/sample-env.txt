@@ -1,0 +1,33 @@
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/admin_db
+
+# Firebase
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_PRIVATE_KEY_ID=your-key-id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour-private-key\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+
+# OpenAI
+OPENAI_API_KEY=sk-your-openai-key
+
+# Groq API Configuration (for Creator Recommendation)
+GROQ_API_KEY=your-groq-api-key
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# Session Configuration (for Creator Recommendation)
+SESSION_TIMEOUT_MINUTES=30
+MAX_CONVERSATION_LENGTH=100
+
+# Server Configuration
+HOST=0.0.0.0
+PORT=8000
+LOG_LEVEL=info
+
+# Database Configuration (for Creator Recommendation)
+DATABASE_PATH=data/dev/database.json
+
+# Exotel (Call Masking)
+EXOTEL_SID=your-exotel-sid
+EXOTEL_API_KEY=your-exotel-api-key
+EXOTEL_API_TOKEN=your-exotel-api-token
+EXOTEL_CALLER_ID=your-exotel-caller-id
