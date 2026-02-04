@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+bcrypt
+cloudinary
+email-validator
+firebase-admin
+python-dotenv
+python-multipart
+razorpay
+langchain-groq
+langchain-core
+langgraph
+langchain

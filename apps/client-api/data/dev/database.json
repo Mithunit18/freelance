@@ -1,0 +1,778 @@
+{
+  "videographers": [
+    {
+      "id": "c6852df4-0405-44c1-9937-39334ecb843e",
+      "name": "Vikram Patel",
+      "location": {
+        "city": "Kolkata",
+        "state": "West Bengal",
+        "country": "India"
+      },
+      "styles": [
+        "Documentary",
+        "Cinematic"
+      ],
+      "deliverables": [
+        "YouTube video",
+        "Edited highlight video",
+        "Raw footage"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 22200,
+        "max": 35361
+      },
+      "available": true,
+      "rating": 4.1
+    },
+    {
+      "id": "baf0ebff-1bbf-4022-82c5-2c25bf2e5660",
+      "name": "Arjun Patel",
+      "location": {
+        "city": "Hyderabad",
+        "state": "Telangana",
+        "country": "India"
+      },
+      "styles": [
+        "Documentary",
+        "Cinematic"
+      ],
+      "deliverables": [
+        "Edited highlight video",
+        "Raw footage",
+        "YouTube video"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 33643,
+        "max": 58040
+      },
+      "available": true,
+      "rating": 4.6
+    },
+    {
+      "id": "1e05e1db-c9df-47a8-894d-f6f26f8c02a2",
+      "name": "Aditi Nair",
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Minimal",
+        "Corporate"
+      ],
+      "deliverables": [
+        "Raw footage",
+        "YouTube video",
+        "Instagram reels"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 39799,
+        "max": 68823
+      },
+      "available": true,
+      "rating": 4.0
+    },
+    {
+      "id": "fd6af08e-f178-4cd0-bb21-e9337e93c640",
+      "name": "Priya Mehta",
+      "location": {
+        "city": "Kolkata",
+        "state": "West Bengal",
+        "country": "India"
+      },
+      "styles": [
+        "Minimal",
+        "Documentary"
+      ],
+      "deliverables": [
+        "Edited highlight video",
+        "Raw footage",
+        "Instagram reels"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 35329,
+        "max": 58226
+      },
+      "available": true,
+      "rating": 4.6
+    },
+    {
+      "id": "795a72ce-640b-4c4b-b8a9-58d093f0ecaf",
+      "name": "Rahul Kapoor",
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Corporate",
+        "Documentary"
+      ],
+      "deliverables": [
+        "Edited highlight video",
+        "YouTube video",
+        "Raw footage"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 21386,
+        "max": 38099
+      },
+      "available": true,
+      "rating": 4.7
+    },
+    {
+      "id": "40bb4854-98e7-48f1-8ec4-5451af2e6969",
+      "name": "Neha Reddy",
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Documentary",
+        "Cinematic"
+      ],
+      "deliverables": [
+        "Edited highlight video",
+        "Instagram reels",
+        "YouTube video"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 28879,
+        "max": 42233
+      },
+      "available": true,
+      "rating": 4.6
+    },
+    {
+      "id": "fc1ceb6b-e122-478a-accb-d01e9bc4d9ef",
+      "name": "Ananya Iyer",
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Corporate",
+        "Cinematic"
+      ],
+      "deliverables": [
+        "YouTube video",
+        "Edited highlight video",
+        "Instagram reels"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 22647,
+        "max": 44839
+      },
+      "available": true,
+      "rating": 4.1
+    },
+    {
+      "id": "12067e4c-037f-45df-a3e9-f91d7c34bf19",
+      "name": "Neha Patel",
+      "location": {
+        "city": "Chennai",
+        "state": "Tamil Nadu",
+        "country": "India"
+      },
+      "styles": [
+        "Corporate",
+        "Documentary"
+      ],
+      "deliverables": [
+        "Instagram reels",
+        "YouTube video",
+        "Raw footage"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 35661,
+        "max": 53637
+      },
+      "available": true,
+      "rating": 4.3
+    },
+    {
+      "id": "e5e98a22-5de4-4800-a030-be2bba333f7b",
+      "name": "Rohan Bansal",
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Documentary",
+        "Cinematic"
+      ],
+      "deliverables": [
+        "Raw footage",
+        "Edited highlight video",
+        "YouTube video"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 24762,
+        "max": 39095
+      },
+      "available": true,
+      "rating": 4.3
+    },
+    {
+      "id": "46a0f639-48ac-43ab-9fe1-115a75757bf3",
+      "name": "Arjun Bansal",
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Minimal",
+        "Corporate"
+      ],
+      "deliverables": [
+        "YouTube video",
+        "Raw footage",
+        "Edited highlight video"
+      ],
+      "equipment": [
+        "Gimbal",
+        "LED Lights",
+        "External Mic"
+      ],
+      "budget_range": {
+        "min": 29188,
+        "max": 46292
+      },
+      "available": true,
+      "rating": 4.8
+    }
+  ],
+  "photographers": [
+    {
+      "id": "caa2df22-201f-4adb-b42b-cc121a1f1da4",
+      "name": "Rohan Mehta",
+      "location": {
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "country": "India"
+      },
+      "styles": [
+        "Candid",
+        "Portrait"
+      ],
+      "deliverables": [
+        "Raw images",
+        "Edited photos",
+        "Wedding album"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 39845,
+        "max": 67478
+      },
+      "available": true,
+      "rating": 5.0
+    },
+    {
+      "id": "4359a4a5-b5df-4f6f-9fc0-0a0e1034b270",
+      "name": "Ananya Gupta",
+      "location": {
+        "city": "Chennai",
+        "state": "Tamil Nadu",
+        "country": "India"
+      },
+      "styles": [
+        "Portrait",
+        "Traditional"
+      ],
+      "deliverables": [
+        "Raw images",
+        "Wedding album",
+        "Product photos"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 32076,
+        "max": 55583
+      },
+      "available": true,
+      "rating": 4.5
+    },
+    {
+      "id": "12f42249-0c73-4a52-941f-b258eabd8ef1",
+      "name": "Priya Reddy",
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Portrait",
+        "Traditional"
+      ],
+      "deliverables": [
+        "Raw images",
+        "Wedding album",
+        "Product photos"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 29183,
+        "max": 56796
+      },
+      "available": true,
+      "rating": 3.9
+    },
+    {
+      "id": "479dc661-3ecd-4f4a-ab34-eabee46fa821",
+      "name": "Siddharth Malhotra",
+      "location": {
+        "city": "Kolkata",
+        "state": "West Bengal",
+        "country": "India"
+      },
+      "styles": [
+        "Product",
+        "Candid"
+      ],
+      "deliverables": [
+        "Product photos",
+        "Wedding album",
+        "Raw images"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 26227,
+        "max": 49498
+      },
+      "available": true,
+      "rating": 4.4
+    },
+    {
+      "id": "25f27b6e-3243-4da0-96f2-7d183d3ef405",
+      "name": "Ritika Nair",
+      "location": {
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "country": "India"
+      },
+      "styles": [
+        "Product",
+        "Traditional"
+      ],
+      "deliverables": [
+        "Edited photos",
+        "Wedding album",
+        "Raw images"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 38205,
+        "max": 48909
+      },
+      "available": true,
+      "rating": 4.1
+    },
+    {
+      "id": "2e0646aa-1b11-45b7-84c9-d9967c2b8482",
+      "name": "Nikhil Bansal",
+      "location": {
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "country": "India"
+      },
+      "styles": [
+        "Traditional",
+        "Portrait"
+      ],
+      "deliverables": [
+        "Product photos",
+        "Wedding album",
+        "Edited photos"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 30154,
+        "max": 46199
+      },
+      "available": true,
+      "rating": 4.8
+    },
+    {
+      "id": "62c989f6-3a2d-44f2-a67c-85103219c053",
+      "name": "Aditi Reddy",
+      "location": {
+        "city": "Delhi",
+        "state": "Delhi",
+        "country": "India"
+      },
+      "styles": [
+        "Candid",
+        "Product"
+      ],
+      "deliverables": [
+        "Wedding album",
+        "Product photos",
+        "Edited photos"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 17338,
+        "max": 31792
+      },
+      "available": true,
+      "rating": 4.6
+    },
+    {
+      "id": "300a566d-4423-4764-b9f2-6c19fddba0c1",
+      "name": "Aditya Malhotra",
+      "location": {
+        "city": "Delhi",
+        "state": "Delhi",
+        "country": "India"
+      },
+      "styles": [
+        "Traditional",
+        "Candid"
+      ],
+      "deliverables": [
+        "Wedding album",
+        "Product photos",
+        "Edited photos"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 17119,
+        "max": 44353
+      },
+      "available": true,
+      "rating": 3.8
+    },
+    {
+      "id": "eda4024d-b9c5-490f-95f4-3f75d784ad42",
+      "name": "Rahul Chatterjee",
+      "location": {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "styles": [
+        "Product",
+        "Traditional"
+      ],
+      "deliverables": [
+        "Edited photos",
+        "Product photos",
+        "Wedding album"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 36291,
+        "max": 64158
+      },
+      "available": true,
+      "rating": 5.0
+    },
+    {
+      "id": "ed7a170b-ae07-43aa-828e-bd4f3aaee163",
+      "name": "Aditi Singh",
+      "location": {
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "country": "India"
+      },
+      "styles": [
+        "Portrait",
+        "Traditional"
+      ],
+      "deliverables": [
+        "Wedding album",
+        "Raw images",
+        "Edited photos"
+      ],
+      "equipment": [
+        "Full-frame camera",
+        "Portrait lens",
+        "Flash"
+      ],
+      "budget_range": {
+        "min": 27015,
+        "max": 56449
+      },
+      "available": true,
+      "rating": 4.1
+    }
+  ],
+  "editors": [
+    {
+      "id": "a5100fbe-006a-43bf-84ec-72ebf1fb4abf",
+      "name": "Arjun Reddy",
+      "editor_specialization": "video_editor",
+      "work_mode": "remote",
+      "location": null,
+      "content_types": [
+        "YouTube videos",
+        "Marketing creatives"
+      ],
+      "budget_range": {
+        "min": 10222,
+        "max": 38545
+      },
+      "available": true,
+      "rating": 3.9
+    },
+    {
+      "id": "5f4f31ae-47f6-4490-b1b0-e63e737d441e",
+      "name": "Manish Malhotra",
+      "editor_specialization": "graphic_designer",
+      "work_mode": "remote",
+      "location": null,
+      "content_types": [
+        "Corporate videos",
+        "Marketing creatives"
+      ],
+      "budget_range": {
+        "min": 18130,
+        "max": 35929
+      },
+      "available": true,
+      "rating": 4.9
+    },
+    {
+      "id": "8cb41667-0763-45c2-8ca7-97ff06467266",
+      "name": "Shreya Gupta",
+      "editor_specialization": "graphic_designer",
+      "work_mode": "remote",
+      "location": null,
+      "content_types": [
+        "YouTube videos",
+        "Instagram reels"
+      ],
+      "budget_range": {
+        "min": 15562,
+        "max": 26324
+      },
+      "available": true,
+      "rating": 3.9
+    },
+    {
+      "id": "6196cf80-e03f-4256-8e78-578e7fcc052e",
+      "name": "Kavya Singh",
+      "editor_specialization": "graphic_designer",
+      "work_mode": "hybrid",
+      "location": {
+        "city": "Bangalore",
+        "state": "Karnataka",
+        "country": "India"
+      },
+      "content_types": [
+        "Marketing creatives",
+        "YouTube videos"
+      ],
+      "budget_range": {
+        "min": 22894,
+        "max": 50466
+      },
+      "available": true,
+      "rating": 4.8
+    },
+    {
+      "id": "c66d0d53-4785-4a99-aefd-c2443453eb66",
+      "name": "Rohan Nair",
+      "editor_specialization": "motion_designer",
+      "work_mode": "onsite",
+      "location": {
+        "city": "Kochi",
+        "state": "Kerala",
+        "country": "India"
+      },
+      "content_types": [
+        "YouTube videos",
+        "Instagram reels"
+      ],
+      "budget_range": {
+        "min": 16374,
+        "max": 43073
+      },
+      "available": true,
+      "rating": 4.7
+    },
+    {
+      "id": "f850c326-dfc4-4f29-b36e-dd2846caae24",
+      "name": "Manish Patel",
+      "editor_specialization": "motion_designer",
+      "work_mode": "onsite",
+      "location": {
+        "city": "Pune",
+        "state": "Maharashtra",
+        "country": "India"
+      },
+      "content_types": [
+        "YouTube videos",
+        "Instagram reels"
+      ],
+      "budget_range": {
+        "min": 16146,
+        "max": 26239
+      },
+      "available": true,
+      "rating": 4.6
+    },
+    {
+      "id": "5ea774b6-5cf9-41bd-b8ab-9944ad8c13b1",
+      "name": "Priya Patel",
+      "editor_specialization": "motion_designer",
+      "work_mode": "onsite",
+      "location": {
+        "city": "Kolkata",
+        "state": "West Bengal",
+        "country": "India"
+      },
+      "content_types": [
+        "Marketing creatives",
+        "YouTube videos"
+      ],
+      "budget_range": {
+        "min": 25088,
+        "max": 54158
+      },
+      "available": true,
+      "rating": 4.5
+    },
+    {
+      "id": "8a8d886f-4a31-41d5-b6b8-6eb2b2bd456b",
+      "name": "Aarav Patel",
+      "editor_specialization": "motion_designer",
+      "work_mode": "hybrid",
+      "location": {
+        "city": "Kolkata",
+        "state": "West Bengal",
+        "country": "India"
+      },
+      "content_types": [
+        "YouTube videos",
+        "Marketing creatives"
+      ],
+      "budget_range": {
+        "min": 24584,
+        "max": 43499
+      },
+      "available": true,
+      "rating": 4.8
+    },
+    {
+      "id": "071d09e1-ff6a-488e-9270-d1e3fe353149",
+      "name": "Siddharth Gupta",
+      "editor_specialization": "motion_designer",
+      "work_mode": "remote",
+      "location": null,
+      "content_types": [
+        "YouTube videos",
+        "Marketing creatives"
+      ],
+      "budget_range": {
+        "min": 21517,
+        "max": 41319
+      },
+      "available": true,
+      "rating": 3.9
+    },
+    {
+      "id": "1553541e-ccc6-4c0c-9fb4-d6223aeaf340",
+      "name": "Siddharth Malhotra",
+      "editor_specialization": "motion_designer",
+      "work_mode": "remote",
+      "location": null,
+      "content_types": [
+        "Instagram reels",
+        "Corporate videos"
+      ],
+      "budget_range": {
+        "min": 11161,
+        "max": 28092
+      },
+      "available": true,
+      "rating": 4.9
+    }
+  ]
+}
