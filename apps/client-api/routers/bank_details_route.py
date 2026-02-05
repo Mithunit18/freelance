@@ -5,7 +5,7 @@ Handles bank account validation and storage for creators.
 This is used for Razorpay payouts to creators.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from models.bank_details import (
     BankDetailsRequest,
     BankDetailsResponse,
@@ -21,9 +21,8 @@ router = APIRouter(prefix="/api/creator/bank", tags=["Bank Details"])
 
 @router.post("/validate-ifsc", response_model=IFSCValidationResponse)
 async def validate_ifsc_code(
-    ifsc_code: str,
-    current_user: authmeschema = Depends(get_current_user)
-):
+    ifsc_code: str = Query(..., description="The IFSC code to validate"),
+    current_user: authmeschema =  Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Validate an IFSC code and return bank/branch details.
     This is a free API call that helps users verify their IFSC before submission.
@@ -60,7 +59,7 @@ async def validate_ifsc_code(
 @router.post("/submit", response_model=BankDetailsResponse)
 async def submit_bank_details(
     request: BankDetailsRequest,
-    current_user: authmeschema = Depends(get_current_user(allowed_roles=["creator"]))
+    current_user: authmeschema = Depends(get_current_user(allowed_roles=["photographer", "videographer"]))
 ):
     """
     Submit and validate bank account details.
@@ -149,7 +148,7 @@ async def submit_bank_details(
 
 @router.get("/status")
 async def get_bank_details_status(
-    current_user: authmeschema = Depends(get_current_user(allowed_roles=["creator"]))
+    current_user: authmeschema = Depends(get_current_user(allowed_roles=["photographer", "videographer"]))
 ):
     """
     Get the current bank details status for the authenticated creator.

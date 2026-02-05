@@ -36,19 +36,6 @@ import { cn } from '@vision-match/utils-js';
 import { palette, themeClasses } from '@/utils/theme';
 import { toast } from 'react-hot-toast';
 
-// Dummy data for bookings
-const bookings = [
-  {
-    id: '1',
-    creatorName: 'Vikram Singh',
-    specialty: 'Product Photography',
-    date: 'Dec 20, 2025',
-    status: 'confirmed',
-    location: 'Bangalore',
-    price: '₹25,000',
-  },
-];
-
 // Floating background orb - LIGHT THEME (reduced opacity)
 const FloatingOrb = ({ className, delay = 0 }: { className?: string; delay?: number }) => (
   <motion.div
@@ -134,7 +121,6 @@ export default function DashboardPage() {
   
   // Data States
   const [clientId, setClientId] = useState<string | null>(null);
-  const [bookingsList, setBookingsList] = useState(bookings);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -403,7 +389,7 @@ export default function DashboardPage() {
             <StatsCard 
               icon={CheckCircle} 
               label="Confirmed" 
-              value={bookingsList.length}
+              value={requestDetails.filter(r => r.status === 'accepted' || r.status === 'paid' || r.status === 'escrowed' || r.status === 'completed').length}
               gradient="from-emerald-500 to-green-500"
             />
           </motion.div>
@@ -416,8 +402,8 @@ export default function DashboardPage() {
             className="flex gap-2 mb-8 p-1.5 bg-white/60 backdrop-blur-sm rounded-2xl border border-gray-200 w-fit shadow-sm"
           >
             {[
-              { id: 'requests', label: 'Project Requests', count: requestDetails.length },
-              { id: 'bookings', label: 'Confirmed Bookings', count: bookingsList.length },
+              { id: 'requests', label: 'Project Requests', count: requestDetails.filter(r => r.status !== 'accepted' && r.status !== 'paid' && r.status !== 'escrowed' && r.status !== 'completed').length },
+              { id: 'bookings', label: 'Confirmed Bookings', count: requestDetails.filter(r => r.status === 'accepted' || r.status === 'paid' || r.status === 'escrowed' || r.status === 'completed').length },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -471,7 +457,7 @@ export default function DashboardPage() {
                   <Loader className="h-8 w-8 text-pink-500 animate-spin mx-auto mb-4" />
                   <p className="text-gray-500">Loading requests...</p>
                 </motion.div>
-              ) : (!requestDetails || requestDetails.length === 0) ? (
+              ) : (!requestDetails || requestDetails.filter(r => r.status !== 'accepted' && r.status !== 'paid' && r.status !== 'escrowed' && r.status !== 'completed').length === 0) ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -493,7 +479,7 @@ export default function DashboardPage() {
                   </Link>
                 </motion.div>
               ) : (
-                requestDetails.map((request, index) => (
+                requestDetails.filter(r => r.status !== 'accepted' && r.status !== 'paid' && r.status !== 'escrowed' && r.status !== 'completed').map((request, index) => (
                   <motion.div
                     key={request.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -618,10 +604,19 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Bookings Tab */}
+          {/* Bookings Tab - Shows accepted requests with same card format */}
           {activeTab === 'bookings' && (
             <div className="space-y-4">
-              {bookingsList.length === 0 ? (
+              {loading ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="p-12 bg-white/80 backdrop-blur-sm rounded-3xl border border-gray-200 text-center shadow-sm"
+                >
+                  <Loader className="h-8 w-8 text-emerald-500 animate-spin mx-auto mb-4" />
+                  <p className="text-gray-500">Loading confirmed bookings...</p>
+                </motion.div>
+              ) : requestDetails.filter(r => r.status === 'accepted' || r.status === 'paid' || r.status === 'escrowed' || r.status === 'completed').length === 0 ? (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -643,62 +638,126 @@ export default function DashboardPage() {
                   </Link>
                 </motion.div>
               ) : (
-                bookingsList.map((booking, index) => (
+                requestDetails
+                  .filter(r => r.status === 'accepted' || r.status === 'paid' || r.status === 'escrowed' || r.status === 'completed')
+                  .map((request, index) => (
                   <motion.div
-                    key={booking.id}
+                    key={request.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="p-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-emerald-200 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-100/50 transition-all"
+                    className="p-6 bg-white/80 backdrop-blur-sm rounded-3xl border border-gray-200 hover:border-pink-300 hover:shadow-lg hover:shadow-pink-100/50 transition-all group"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-xl font-bold text-gray-900">{booking.creatorName}</h3>
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <CheckCircle className="h-3 w-3" />
-                            Confirmed
-                          </span>
+                        <div className="flex items-center gap-3 mb-2 flex-wrap">
+                          <h3 className="text-xl font-bold text-gray-900">{request.creatorName}</h3>
+                          <StatusBadge status={request.status} />
+                          {/* Show payment status badge if escrowed/completed */}
+                          {paymentStatuses[request.id] && (
+                            <StatusBadge status={paymentStatuses[request.id].status} />
+                          )}
                         </div>
-                        <p className="text-gray-500">{booking.specialty}</p>
+                        <p className="text-gray-500">{request.creatorSpecialisation}</p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          Sent {new Date(request.createdAt).toLocaleDateString()}
+                        </p>
                       </div>
-                      <p className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-green-500 bg-clip-text text-transparent">
-                        {booking.price}
-                      </p>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                          {request.package?.price}
+                        </p>
+                        <p className="text-sm text-gray-400">{request.package?.name} Package</p>
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 mb-5">
-                      <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <Calendar className="h-4 w-4 text-emerald-600" />
-                        <span className="text-sm text-gray-700">{booking.date}</span>
-                      </div>
-                      <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                        <MapPin className="h-4 w-4 text-emerald-600" />
-                        <span className="text-sm text-gray-700">{booking.location}</span>
-                      </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+                      {[
+                        { icon: Camera, value: request.serviceType, label: 'Service' },
+                        { icon: MapPin, value: request.location, label: 'Location' },
+                        { icon: Calendar, value: new Date(request.eventDate).toLocaleDateString(), label: 'Date' },
+                      ].map((item) => (
+                        <div key={item.label} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                          <item.icon className="h-4 w-4 text-pink-500" />
+                          <span className="text-sm text-gray-700 capitalize truncate">{item.value}</span>
+                        </div>
+                      ))}
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link href={`/client/chat/${booking.id}`} className="flex-1">
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedRequestId(request.id)}
+                        disabled={detailsLoading && selectedRequestId === request.id}
+                        className="flex-1 py-3 px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl border border-gray-200 transition-all flex items-center justify-center gap-2"
+                      >
+                        View Details
+                        <ChevronRight className="h-4 w-4" />
+                      </motion.button>
+                      
+                      {/* Chat button for negotiation statuses */}
+                      {(request.status === 'responded' || request.status === 'negotiation_proposed' || request.status === 'negotiating') && (
+                        <Link href={`/client/chat/${request.id}`} className="flex-1">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full py-3 px-5 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-pink-500/30 transition-all flex items-center justify-center gap-2"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            Open Chat
+                          </motion.button>
+                        </Link>
+                      )}
+                      
+                      {/* Payment button for accepted status - hide if payment already completed */}
+                      {request.status === 'accepted' && 
+                       !(paymentStatuses[request.id] && 
+                         (paymentStatuses[request.id].status === 'completed')) && (
+                        <Link href={`/client/payment/${request.id}`} className="flex-1">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full py-3 px-5 bg-gradient-to-r from-emerald-500 to-green-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-2"
+                          >
+                            <DollarSign className="h-4 w-4" />
+                            Proceed to Payment
+                          </motion.button>
+                        </Link>
+                      )}
+                      
+                      {/* Booking link for paid status */}
+                      {request.status === 'paid' && (
+                        <Link href={`/client/booking/${request.id}/confirmation`} className="flex-1">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full py-3 px-5 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2"
+                          >
+                            <Package className="h-4 w-4" />
+                            View Booking
+                          </motion.button>
+                        </Link>
+                      )}
+                      
+                      {/* Call Creator button - show when payment is escrowed or completed */}
+                      {paymentStatuses[request.id] && 
+                       (paymentStatuses[request.id].status === 'escrowed' || paymentStatuses[request.id].status === 'completed') && (
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="w-full py-3 px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl border border-gray-200 transition-all flex items-center justify-center gap-2"
+                          onClick={() => {
+                            // Open call modal to get client's phone number
+                            setCallRequestId(request.id);
+                            setCallCreatorId(request.creatorId);
+                            setCallModalOpen(true);
+                          }}
+                          className="flex-1 py-3 px-5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-green-500/30 transition-all flex items-center justify-center gap-2"
                         >
-                          <MessageCircle className="h-4 w-4" />
-                          Message Creator
+                          <Phone className="h-4 w-4" />
+                          Call Creator
                         </motion.button>
-                      </Link>
-                      <Link href={`/client/review/${booking.id}`} className="flex-1">
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="w-full py-3 px-5 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-xl hover:shadow-lg hover:shadow-amber-500/30 transition-all flex items-center justify-center gap-2"
-                        >
-                          <Star className="h-4 w-4" />
-                          Leave Review
-                        </motion.button>
-                      </Link>
+                      )}
                     </div>
                   </motion.div>
                 ))

@@ -19,6 +19,8 @@ from routers import client_onboarding_route
 from routers import bank_details_route
 from routers import session_routes
 from services.session_manager import session_manager
+from services import payment_service
+from routers import email_route
 
 
 async def cleanup_task():
@@ -28,16 +30,39 @@ async def cleanup_task():
         session_manager.cleanup_expired_sessions()
 
 
+async def auto_release_payment_task():
+    """
+    Background task to automatically release escrowed payments 
+    3 days after the event date.
+    Runs every hour to check for payments ready for auto-release.
+    """
+    while True:
+        await asyncio.sleep(3600)  # Run every 1 hour
+        try:
+            print("[SCHEDULER] Running auto-release payment check...")
+            result = payment_service.auto_release_escrowed_payments()
+            print(f"[SCHEDULER] Auto-release result: {result.get('message')}")
+        except Exception as e:
+            print(f"[SCHEDULER] Error in auto-release task: {str(e)}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events."""
-    # Startup: Start the cleanup task
-    task = asyncio.create_task(cleanup_task())
+    # Startup: Start the background tasks
+    cleanup_task_handle = asyncio.create_task(cleanup_task())
+    auto_release_task_handle = asyncio.create_task(auto_release_payment_task())
+    print("[STARTUP] Background tasks started: session cleanup, auto-release payments")
     yield
-    # Shutdown: Cancel the cleanup task
-    task.cancel()
+    # Shutdown: Cancel the background tasks
+    cleanup_task_handle.cancel()
+    auto_release_task_handle.cancel()
     try:
-        await task
+        await cleanup_task_handle
+    except asyncio.CancelledError:
+        pass
+    try:
+        await auto_release_task_handle
     except asyncio.CancelledError:
         pass
 
@@ -71,6 +96,7 @@ app.include_router(payment_route.router)
 app.include_router(call_route.router)
 app.include_router(client_onboarding_route.router)
 app.include_router(bank_details_route.router)
+app.include_router(email_route.router)
 
 # Creator recommendation chat routes
 app.include_router(session_routes.router)

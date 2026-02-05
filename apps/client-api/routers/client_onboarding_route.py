@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/client/onboarding", tags=["Client Onboarding"])
 @router.post("/submit", response_model=ClientOnboardingResponse)
 async def submit_onboarding(
     request: ClientOnboardingRequest, 
-    current_user: authmeschema = Depends(get_current_user)
+    current_user: authmeschema = Depends(get_current_user(allowed_roles=['client']))
 ):
     """
     Submit client onboarding data.
@@ -56,7 +56,7 @@ async def submit_onboarding(
 
 
 @router.get("/get")
-async def get_onboarding_data(current_user: authmeschema = Depends(get_current_user)):
+async def get_onboarding_data(current_user: authmeschema = Depends(get_current_user(allowed_roles=['client']))):
     """
     Fetch existing client onboarding/profile data.
     """
@@ -96,7 +96,7 @@ async def get_onboarding_data(current_user: authmeschema = Depends(get_current_u
 
 
 @router.get("/status")
-async def get_onboarding_status(current_user: authmeschema = Depends(get_current_user)):
+async def get_onboarding_status(current_user: authmeschema = Depends(get_current_user(allowed_roles=['client']))):
     """
     Check if client has completed onboarding.
     """
@@ -143,7 +143,7 @@ async def update_profile(
 @router.post("/upload-photo")
 async def upload_profile_photo(
     file: UploadFile = File(...),
-    current_user: authmeschema = Depends(get_current_user)
+    current_user: authmeschema = Depends(get_current_user(allowed_roles=['client']))
 ):
     """
     Upload a profile photo to Cloudinary.

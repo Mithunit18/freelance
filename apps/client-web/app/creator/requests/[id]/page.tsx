@@ -25,6 +25,7 @@ import {
 import { useRouter, useParams } from 'next/navigation';
 import { verifySession } from '@/services/clientAuth';
 import { getRequest, updateRequestStatus } from '@/services/creatorProfile';
+import { Email } from '@/services/email';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 
@@ -137,6 +138,34 @@ export default function CreatorRequestDetailPage() {
           : 'Let\'s discuss the details further.';
       
       await updateRequestStatus(requestId, action, message);
+      
+      // Send email notification to client
+      if (request && (action === 'accept' || action === 'decline')) {
+        try {
+          if (action === 'accept') {
+            await Email.sendBookingAcceptedEmail({
+              client_email: request.clientId,
+              client_name: request.clientId?.split('@')[0] || 'Client',
+              creator_name: request.creatorName || 'Creator',
+              service_type: request.serviceType || request.category,
+              event_date: request.eventDate,
+              location: request.location,
+              final_price: request.finalOffer?.price ? String(request.finalOffer.price) : request.package?.price,
+              booking_id: requestId
+            });
+          } else if (action === 'decline') {
+            await Email.sendBookingDeclinedEmail({
+              client_email: request.clientId,
+              client_name: request.clientId?.split('@')[0] || 'Client',
+              creator_name: request.creatorName || 'Creator',
+              booking_id: requestId,
+              decline_message: message
+            });
+          }
+        } catch (emailErr) {
+          console.error('Failed to send email:', emailErr);
+        }
+      }
       
       // Refresh the request
       const data = await getRequest(requestId);

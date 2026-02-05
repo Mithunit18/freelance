@@ -5,10 +5,11 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Auth } from '@/services/Auth';
+import { Email } from '@/services/email'
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  User, Mail, Lock, Check, Loader2, 
-  Camera, Video, Briefcase, Sparkles, ArrowRight 
+import {
+  User, Mail, Lock, Check, Loader2,
+  Camera, Video, Briefcase, Sparkles, ArrowRight
 } from 'lucide-react';
 
 // --- Local UI Components ---
@@ -25,8 +26,8 @@ const Input = ({ icon: Icon, className = '', ...props }: any) => (
 );
 
 const Button = ({ children, className = '', disabled, loading, ...props }: any) => (
-  <button 
-    className={`relative inline-flex items-center justify-center rounded-xl font-bold transition-all h-12 px-6 py-2 disabled:opacity-50 text-white shadow-lg active:scale-95 overflow-hidden group ${className}`} 
+  <button
+    className={`relative inline-flex items-center justify-center rounded-xl font-bold transition-all h-12 px-6 py-2 disabled:opacity-50 text-white shadow-lg active:scale-95 overflow-hidden group ${className}`}
     disabled={disabled || loading}
     style={{ background: 'linear-gradient(to right, #ec4899, #3b82f6)' }}
     {...props}
@@ -40,12 +41,12 @@ const Button = ({ children, className = '', disabled, loading, ...props }: any) 
 
 export default function SignupPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    email: '', 
-    password: '', 
-    confirmPassword: '', 
-    role: '' 
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    role: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -81,9 +82,10 @@ export default function SignupPage() {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        role: formData.role, 
+        role: formData.role,
       });
       toast.success("Account created successfully!");
+      await SendEmail(formData.email);
       // Navigate based on role - client goes to onboarding, creators go to onboarding
       const userRole = data.user?.role || formData.role;
       router.push(userRole === 'client' ? '/client/onboarding' : '/creator/onboarding');
@@ -95,19 +97,38 @@ export default function SignupPage() {
     }
   };
 
+  const SendEmail = async (email: string) => {
+    if (!email) {
+      toast.error("Email is required to send verification.");
+      return;
+    }
+
+    try {
+      await Email.sendVerificationEmail({ email });
+      toast.success("Email sent successfully!");
+    } catch (err: unknown) {
+      const axiosError = err as { response?: { data?: { detail?: string } } };
+      toast.error(
+        axiosError?.response?.data?.detail || "Failed to send email."
+      );
+    }
+  };
+
+
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden" style={{ background: palette.bgGradient }}>
       {/* Decorative Background Orbs */}
       <div className="absolute top-[-5%] right-[-5%] w-[30%] h-[30%] bg-pink-100/30 rounded-full blur-[100px]" />
       <div className="absolute bottom-[-5%] left-[-5%] w-[30%] h-[30%] bg-blue-100/30 rounded-full blur-[100px]" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-2xl w-full relative z-10"
       >
         <div className="bg-white/70 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white shadow-2xl">
-          
+
           <div className="text-center mb-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-gray-100 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm" style={{ color: palette.pink }}>
               <Sparkles className="w-3 h-3" /> Join the community
@@ -128,9 +149,8 @@ export default function SignupPage() {
                     key={role.id}
                     type="button"
                     onClick={() => setFormData({ ...formData, role: role.id })}
-                    className={`relative p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 text-center group ${
-                      formData.role === role.id ? 'bg-white shadow-md' : 'bg-white/40 border-transparent hover:bg-white/60'
-                    }`}
+                    className={`relative p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 text-center group ${formData.role === role.id ? 'bg-white shadow-md' : 'bg-white/40 border-transparent hover:bg-white/60'
+                      }`}
                     style={{ borderColor: formData.role === role.id ? role.color : 'transparent' }}
                   >
                     <role.icon className="w-6 h-6 mb-1 transition-transform group-hover:scale-110" style={{ color: role.color }} />
@@ -171,7 +191,7 @@ export default function SignupPage() {
             <div className="flex items-start gap-3 py-2">
               <input type="checkbox" className="mt-1 w-4 h-4 rounded border-gray-300 text-pink-500 focus:ring-pink-400" required />
               <span className="text-xs leading-relaxed" style={{ color: palette.gray600 }}>
-                I agree to the <Link href="/terms" className="font-bold hover:underline" style={{ color: palette.blue }}>Terms</Link> and 
+                I agree to the <Link href="/terms" className="font-bold hover:underline" style={{ color: palette.blue }}>Terms</Link> and
                 <Link href="/privacy" className="font-bold ml-1 hover:underline" style={{ color: palette.blue }}>Privacy Policy</Link>
               </span>
             </div>

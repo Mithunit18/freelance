@@ -22,6 +22,8 @@ class BankValidationService:
     def __init__(self):
         self.client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         self.ifsc_api_url = "https://ifsc.razorpay.com"
+        # Check if we should simulate bank validation (for development without RazorpayX)
+        self.simulation_mode = getattr(settings, 'PAYMENT_SIMULATION_MODE', False)
     
     async def validate_ifsc(self, ifsc_code: str) -> Dict[str, Any]:
         """
@@ -76,8 +78,26 @@ class BankValidationService:
         Razorpay will send ₹1 to the account and verify if it succeeds.
         
         Note: This costs ₹2 per validation in production. In test mode, it's free.
+        In simulation mode, we skip Razorpay validation entirely.
         """
         try:
+            # SIMULATION MODE: Skip actual Razorpay validation for development
+            # Enable this when you don't have RazorpayX credentials
+            if self.simulation_mode:
+                print(f"[SIMULATION MODE] Simulating bank validation for {user_email}")
+                # Generate simulated IDs
+                import uuid
+                simulated_contact_id = f"cont_sim_{uuid.uuid4().hex[:12]}"
+                simulated_fund_account_id = f"fa_sim_{uuid.uuid4().hex[:12]}"
+                
+                return {
+                    "valid": True,
+                    "message": "Bank account validated successfully (simulation mode)",
+                    "account_holder_name": account_holder_name,
+                    "razorpay_fund_account_id": simulated_fund_account_id,
+                    "razorpay_contact_id": simulated_contact_id
+                }
+            
             # Step 1: Create or get existing contact in Razorpay
             contact_id = await self._get_or_create_contact(user_email, account_holder_name)
             

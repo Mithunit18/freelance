@@ -29,12 +29,20 @@ class Settings:
     # Razorpay Payment Gateway (Test Credentials)
     RAZORPAY_KEY_ID: str = os.getenv("RAZORPAY_KEY_ID", "rzp_test_S4Ska2RUEUUMMi")
     RAZORPAY_KEY_SECRET: str = os.getenv("RAZORPAY_KEY_SECRET", "GO6GiFBAHR6Gd3iHqZeowNJZ")
-    PAYMENT_SIMULATION_MODE: bool = os.getenv("PAYMENT_SIMULATION_MODE", "false").lower() == "true"
+    # Enable simulation mode for development without RazorpayX credentials
+    # Set to "true" to skip actual bank validation (for development only!)
+    PAYMENT_SIMULATION_MODE: bool = os.getenv("PAYMENT_SIMULATION_MODE", "true").lower() == "true"
     
     # Exotel Call Masking
     EXOTEL_SID: str = os.getenv("EXOTEL_SID", "")
     EXOTEL_API_KEY: str = os.getenv("EXOTEL_API_KEY", "")
     EXOTEL_API_TOKEN: str = os.getenv("EXOTEL_API_TOKEN", "")
     EXOTEL_CALLER_ID: str = os.getenv("EXOTEL_CALLER_ID", "")
+    
+    SMTP_HOST=os.getenv("SMTP_HOST","smtp.gmail.com")
+    SMTP_PORT=int(os.getenv("SMTP_PORT", 587))
+    SMTP_USER=os.getenv("SMTP_USER","amthemithun@gmail.com")
+    SMTP_PASSWORD=os.getenv("SMTP_PASSWORD","cxwbaceyscnxvkkr")
+    FROM_EMAIL=os.getenv("FROM_EMAIL","amthemithun@gmail.com")
 
 settings = Settings()

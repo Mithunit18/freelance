@@ -7,7 +7,7 @@ from config.clients import db
 router = APIRouter(prefix="/api/creator/onboarding", tags=["Onboarding"])
 
 @router.get("/status")
-async def get_onboarding_status(current_user: authmeschema = Depends(get_current_user)):
+async def get_onboarding_status(current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer','videographer']))):
     """
     Fetches the current progress of the creator from the 'creators' collection.
     """
@@ -43,7 +43,7 @@ async def get_onboarding_status(current_user: authmeschema = Depends(get_current
         raise HTTPException(status_code=500, detail="Failed to fetch onboarding status")
 
 @router.post("/complete")
-async def complete_onboarding(current_user: authmeschema = Depends(get_current_user)):
+async def complete_onboarding(current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer','videographer']))):
     """
     Finalizes the profile in the 'creators' collection.
     """

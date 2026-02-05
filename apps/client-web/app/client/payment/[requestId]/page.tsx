@@ -624,24 +624,6 @@ export default function PaymentPage() {
       <main className="relative z-10 pt-24 pb-16 px-4">
         <div className="max-w-xl mx-auto">
 
-          {/* Back Button */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="mb-6"
-          >
-            <Link href={`/client/chat/${requestId}`}>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors"
-              >
-                <ArrowLeft className="h-5 w-5" />
-                <span>Back to Chat</span>
-              </motion.button>
-            </Link>
-          </motion.div>
-
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -895,7 +877,7 @@ export default function PaymentPage() {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => router.push(`/client/booking/${requestId}/confirmation`)}
+                    onClick={() => router.push(`/client/dashboard/${clientId}`)}
                     className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-pink-500/30 transition-all flex items-center justify-center gap-2"
                   >
                     View Booking Details

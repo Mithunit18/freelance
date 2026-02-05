@@ -68,7 +68,6 @@ interface FormData {
 const genderOptions = [
   { id: "male", label: "Male", icon: User },
   { id: "female", label: "Female", icon: User },
-  { id: "other", label: "Other", icon: Users },
   { id: "prefer_not_to_say", label: "Prefer not to say", icon: Heart },
 ];
 

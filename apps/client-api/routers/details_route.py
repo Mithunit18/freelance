@@ -8,7 +8,7 @@ from config.clients import db
 router = APIRouter(prefix="/api/creator/details", tags=["Creator Details"])
 
 @router.post("/setup", response_model=CreatorDetailsResponse)
-async def setup_details(request: CreatorDetailsRequest, current_user: authmeschema = Depends(get_current_user)):
+async def setup_details(request: CreatorDetailsRequest, current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     try:
         # Use the email from the Auth cookie as the unique identifier for the creator document
         # We save this in a NEW collection called 'creators'
@@ -52,7 +52,7 @@ async def setup_details(request: CreatorDetailsRequest, current_user: authmesche
         raise HTTPException(status_code=500, detail=f"Failed to save creator details: {str(e)}")
 
 @router.get("/get")
-async def get_details(current_user: authmeschema = Depends(get_current_user)):
+async def get_details(current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     try:
         creator_email = current_user.email
         

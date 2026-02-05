@@ -29,6 +29,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { Auth } from '@/services/Auth';
 import { getCreatorRequests, updateRequestStatus, getCreator, getPaymentStatusByRequest, initiateCall } from '@/services/creatorProfile';
+import { Email } from '@/services/email';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 import { toast } from 'react-hot-toast';
@@ -309,6 +310,26 @@ export default function CreatorDashboardPage() {
   const handleAccept = async (requestId: string) => {
     try {
       await updateRequestStatus(requestId, 'accept', 'I would be happy to work with you!');
+      
+      // Find the request to get client details
+      const request = requests.find(r => r.id === requestId);
+      if (request) {
+        try {
+          await Email.sendBookingAcceptedEmail({
+            client_email: request.clientId,
+            client_name: request.clientId?.split('@')[0] || 'Client',
+            creator_name: request.creatorName || 'Creator',
+            service_type: request.serviceType || request.category,
+            event_date: request.eventDate,
+            location: request.location,
+            final_price: request.package?.price ? String(request.package.price) : undefined,
+            booking_id: requestId
+          });
+        } catch (emailErr) {
+          console.error('Failed to send acceptance email:', emailErr);
+        }
+      }
+      
       // Refresh requests
       if (creatorId) {
         const data = await getCreatorRequests(creatorId);
@@ -322,6 +343,23 @@ export default function CreatorDashboardPage() {
   const handleDecline = async (requestId: string) => {
     try {
       await updateRequestStatus(requestId, 'decline', 'Sorry, I am not available for this date.');
+      
+      // Find the request to get client details
+      const request = requests.find(r => r.id === requestId);
+      if (request) {
+        try {
+          await Email.sendBookingDeclinedEmail({
+            client_email: request.clientId,
+            client_name: request.clientId?.split('@')[0] || 'Client',
+            creator_name: request.creatorName || 'Creator',
+            booking_id: requestId,
+            decline_message: 'Sorry, I am not available for this date.'
+          });
+        } catch (emailErr) {
+          console.error('Failed to send decline email:', emailErr);
+        }
+      }
+      
       if (creatorId) {
         const data = await getCreatorRequests(creatorId);
         setRequests(data);

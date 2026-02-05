@@ -12,7 +12,7 @@ from services.claudinary_service import ClaudinaryService
 router = APIRouter(prefix="/api/creator/verification", tags=["Verification"])
 
 @router.post("/submit", response_model=VerificationResponse)
-async def submit_verification(request: VerificationRequest, current_user: authmeschema = Depends(get_current_user)):
+async def submit_verification(request: VerificationRequest, current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Submits verification documents to the 'creators' collection.
     """
@@ -65,7 +65,7 @@ async def submit_verification(request: VerificationRequest, current_user: authme
 @router.post("/upload-document")
 async def upload_verification_document(
     file: UploadFile = File(...), 
-    current_user: authmeschema = Depends(get_current_user)
+    current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))
 ):
     """
     Uploads verification documents to Cloudinary and returns the secure URL.
@@ -88,7 +88,7 @@ async def upload_verification_document(
         )
 
 @router.get("/status")
-async def get_verification_status(current_user: authmeschema = Depends(get_current_user)):
+async def get_verification_status(current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Retrieves verification status from the 'creators' collection.
     """

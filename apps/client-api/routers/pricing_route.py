@@ -8,7 +8,7 @@ from config.clients import db
 router = APIRouter(prefix="/api/creator/pricing", tags=["Pricing"])
 
 @router.post("/setup", response_model=PricingSetupResponse)
-async def setup_pricing(request: PricingSetupRequest, current_user: authmeschema = Depends(get_current_user)):
+async def setup_pricing(request: PricingSetupRequest, current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Setup creator pricing information in the 'creators' collection and advance to Step 3.
     """
@@ -48,7 +48,7 @@ async def setup_pricing(request: PricingSetupRequest, current_user: authmeschema
 
 
 @router.get("/get")
-async def get_pricing(current_user: authmeschema = Depends(get_current_user)):
+async def get_pricing(current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Fetch existing pricing data from the 'creators' collection for the frontend.
     """

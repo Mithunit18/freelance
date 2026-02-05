@@ -10,7 +10,7 @@ from typing import List
 router = APIRouter(prefix="/api/creator/portfolio", tags=["Portfolio"])
 
 @router.post("/setup", response_model=PortfolioSetupResponse)
-async def setup_portfolio(request: PortfolioSetupRequest, current_user: authmeschema = Depends(get_current_user)):
+async def setup_portfolio(request: PortfolioSetupRequest, current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Setup creator portfolio in the 'creators' collection.
     Advances onboarding to Step 2 (Pricing).
@@ -52,7 +52,7 @@ async def setup_portfolio(request: PortfolioSetupRequest, current_user: authmesc
 
 
 @router.get("/get")
-async def get_portfolio(current_user: authmeschema = Depends(get_current_user)):
+async def get_portfolio(current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))):
     """
     Fetch portfolio data from the 'creators' collection.
     """
@@ -85,7 +85,7 @@ async def get_portfolio(current_user: authmeschema = Depends(get_current_user)):
 @router.post("/upload-image")
 async def upload_portfolio_image(
     file: UploadFile = File(...), 
-    current_user: authmeschema = Depends(get_current_user)
+    current_user: authmeschema = Depends(get_current_user(allowed_roles=['photographer', 'videographer']))
 ):
     """
     Endpoint for uploading images. Now integrates with Cloudinary.

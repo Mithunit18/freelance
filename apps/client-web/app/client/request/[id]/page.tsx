@@ -30,6 +30,7 @@ import { getCreator, Creator, requestProject } from '@/services/creatorProfile';
 import { formatDate } from '@/utils/helper';
 import { useWizardStore } from '@/stores/WizardStore';
 import { Auth } from '@/services/Auth';
+import { Email } from '@/services/email';
 import { Header } from '@/components/layout/Header';
 import { cn } from '@vision-match/utils-js';
 import { palette, themeClasses } from '@/utils/theme';
@@ -239,6 +240,26 @@ export default function RequestPage() {
       const result = await requestProject(payload);
 
       if (result?.success) {
+        // Send booking emails to both client and creator
+        try {
+          await Email.sendBookingEmail({
+            client_email: clientId,
+            client_name: clientId?.split('@')[0] || 'Client',
+            creator_email: creator.id, // creator.id is the email
+            creator_name: creator.name || creator.full_name || 'Creator',
+            service_type: serviceType || category || 'Photography',
+            event_date: eventDate ? String(eventDate) : undefined,
+            location: location || undefined,
+            package_name: selectedPackage?.name || 'Custom Inquiry',
+            package_price: selectedPackage?.price || budget || 'To be discussed',
+            booking_id: result.requestId,
+            client_message: message || undefined
+          });
+        } catch (emailErr) {
+          console.error('Failed to send booking email:', emailErr);
+          // Don't block the flow if email fails
+        }
+
         setSubmitSuccess(true);
         resetWizard();
 
